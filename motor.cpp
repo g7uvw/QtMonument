@@ -1,0 +1,270 @@
+#include "motor.h"
+#include <sstream>
+#include <string.h>
+#include <cmath>
+
+#define CRLF "\x0D\x0A"
+
+
+#define TALK_TO_MOTOR() \
+    cmd.clear(); \
+    cmd << "{" << MotorID << CRLF;   \
+    m_pPort->write(cmd.str().c_str(),cmd.str().length()); \
+    cmd.clear();
+
+#define STOP_TALKING_TO_MOTOR() \
+    cmd.clear(); \
+    cmd << "{0" << CRLF;   \
+    m_pPort->write(cmd.str().c_str(),cmd.str().length()); \
+    cmd.clear();
+
+using namespace std;
+
+Motor::Motor(QSerialPort *port, uint16_t ID)
+    : m_pPort(port)
+    , MotorID(ID)
+    {
+    logfile.open("log.txt",ios::out|ios::app);
+    logfile <<"Motor "<<ID<<" Open for communication"<<endl;
+
+   // char sRxBuf[300]={};
+   // stringstream cmd;
+   // cmd << "K37." << MotorID << CRLF;
+  //  m_pPort->write(cmd.str().c_str(),cmd.str().length());
+   // m_pPort->read(sRxBuf,20,200);
+
+
+    //cmd.clear();
+   // cmd.str("");
+   // cmd << "K14." << MotorID << "\x0D\x0A";
+   // m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    //m_pPort->read(sRxBuf,200,2000);
+
+
+    //dump motor params for debugging.
+   // cmd.str("");
+   // cmd << "%100" << CRLF;
+   // m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    //m_pPort->read(sRxBuf,200,2000);
+   // init3 = sRxBuf;
+
+    }
+
+
+Motor::~Motor(void)
+    {
+        logfile.close();
+    }
+
+void Motor::Init(void)
+{
+    stringstream cmd;
+
+    TALK_TO_MOTOR()
+
+    cmd << "|2" << CRLF;        //Set current postion to be origin
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    cmd.clear();
+
+    STOP_TALKING_TO_MOTOR()
+}
+
+bool Motor::SetHighResolution()
+    {
+
+    stringstream cmd;
+
+    TALK_TO_MOTOR()
+
+    cmd << "K37=100" << CRLF; //Set 1:1 resolution with encoder
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    cmd.clear();
+
+    STOP_TALKING_TO_MOTOR()
+
+    return false;
+    }
+
+bool Motor::SetAcceleration(int Acceleration)
+    {
+    stringstream cmd;
+
+    TALK_TO_MOTOR()
+
+    cmd << "A=" << Acceleration << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+
+    STOP_TALKING_TO_MOTOR()
+
+    return false;
+    }
+
+
+
+bool Motor::SetSpeed(double Speed)
+    {
+    //Speed vale here is in pulses
+    //in 1:1 encoder mode, there are 50,000 pulses for one rev/sec
+    speed = (int) round (Speed);
+    stringstream cmd;
+
+    TALK_TO_MOTOR()
+
+    cmd << "S=" << speed/10 << CRLF;
+    logfile << cmd.str() <<endl;
+    //logfile <<"setting speed" <<endl;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+
+    STOP_TALKING_TO_MOTOR()
+    return false;
+    }
+
+double Motor::GetSpeed(void)
+    {
+        //returns revs /sec
+        return (double) speed;
+    }
+
+
+bool Motor::EmergencyStop(void)
+    {
+    stringstream cmd;
+
+    TALK_TO_MOTOR()
+
+    cmd << "]" << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+
+    STOP_TALKING_TO_MOTOR()
+
+    return false;
+    }
+
+bool Motor::Lock(void)
+    {
+    stringstream cmd;
+
+    TALK_TO_MOTOR()
+
+    cmd << "(" << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+
+    STOP_TALKING_TO_MOTOR()
+
+    Locked = true;
+    return false;
+    }
+
+
+bool Motor::Free(void)
+    {
+    stringstream cmd;
+
+    TALK_TO_MOTOR()
+
+    cmd.str("");
+    cmd << ")" << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+
+    STOP_TALKING_TO_MOTOR()
+
+    Locked = false;
+    return false;
+    }
+
+
+void Motor::Demo(void)
+    {
+    stringstream cmd;
+    /*cmd.str("");
+    cmd << "]." << MotorID << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    cmd << "P." << MotorID << "=1000000000" << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    cmd << "S." << MotorID << "=0" << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    cmd << "A." << MotorID << "=100" << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    //Sleep(100);
+    cmd << "S." << MotorID << "=72" << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    cmd << "^." << MotorID << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    //Sleep(5000);
+    cmd << "S." << MotorID << "=8000" << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    cmd << "^." << MotorID << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    //Sleep(5000);
+    cmd << "S." << MotorID << "=100" << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    cmd << "^." << MotorID << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    //Sleep(5000);
+    cmd << "S." << MotorID << "=-2000" << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    cmd << "^." << MotorID << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    //Sleep(5000);
+    cmd << "]." << MotorID << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    */
+    }
+
+
+void Motor::Run(long int length, int acceleration, int speed, int direction)
+    {
+    //length is in pulse counts. In 1:1 encoder mode, 50k pulses is one revolution.
+
+    stringstream cmd;
+
+    TALK_TO_MOTOR()
+
+    double runspeed = speed / 10.0;
+    //speed /=10;	//fix speed issue. Even with correct settinsg we're still 10x too fast.
+
+    //stop the motor
+    //cmd << "]." << MotorID << CRLF;
+    //m_pPort->write(cmd.str().c_str(),cmd.str().length());
+
+    //tell the motor the current position is 0
+    //all moves are relative from here
+    cmd << "|2" << CRLF;
+
+    //set speed and acceleration
+    cmd << "A=" << acceleration << CRLF;
+
+    cmd << "S=" << runspeed << CRLF;
+
+    //set target position
+    cmd << "P=" << direction*length << CRLF;
+
+    //go
+    cmd << "^" << CRLF;
+
+    //send commnds to motor
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+
+    //log comands to file
+    logfile << cmd.str() <<endl;
+    }
+
+
+
+long int Motor::GetPosition()
+{
+    stringstream cmd;
+    QByteArray line;
+    TALK_TO_MOTOR()
+
+    cmd << "?96" << CRLF;
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    if (m_pPort->canReadLine())
+    {
+        line = m_pPort->readLine(100);  // return line is in form Px.1=1000
+    }
+    else return -1;
+
+    QByteArray tmp = line.mid(5);  // chomp the first 5 characters to leave just the number
+    return (tmp.toLongLong());
+}
