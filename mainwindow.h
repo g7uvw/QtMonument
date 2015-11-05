@@ -34,12 +34,18 @@ private slots:
 
     void on_lower_speed_spin_valueChanged(int arg1);
 
+    void on_lower_enable_toggled(bool checked);
+
+    void on_upper_enable_toggled(bool checked);
+
+    void on_lower_pos_spin_valueChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
      QSerialPort *serial;
      SettingsDialog *settings;
-     Motor upper;
-     Motor lower;
+    Motor upper;
+    Motor lower;
 };
 
 #endif // MAINWINDOW_H

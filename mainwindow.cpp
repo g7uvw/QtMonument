@@ -21,8 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // two motors
 
-    Motor lower(serial,1);
-    Motor upper(serial,2);
+    Motor lower();
+    Motor upper();
 }
 
 MainWindow::~MainWindow()
@@ -34,6 +34,8 @@ void MainWindow::on_actionConnect_to_motors_triggered()
 {
 
         openSerialPort();
+        lower.Init(serial,1);
+        upper.Init(serial,2);
 }
 
 void MainWindow::openSerialPort()
@@ -61,6 +63,8 @@ void MainWindow::openSerialPort()
 
 void MainWindow::on_action_Exit_triggered()
 {
+    if (serial->isOpen())
+        serial->close();
     qApp->exit();
 }
 
@@ -93,5 +97,31 @@ void MainWindow::on_lower_speed_spin_valueChanged(int arg1)
 {
     lower.SpoolDiameter = ui->lower_diameter_spin->value();
     double circumference = 3.1415926* lower.SpoolDiameter;
+    lower.SetSpeed(arg1 / circumference);
 
+    ui->upper_speed_spin->setValue( lower.m_speed * (ui->lower_diameter_spin->value() / ui->upper_diameter_spin->value()));
+}
+
+
+
+void MainWindow::on_lower_enable_toggled(bool checked)
+{
+    if (checked)
+        lower.Lock();
+    else
+        lower.Free();
+}
+
+void MainWindow::on_upper_enable_toggled(bool checked)
+{
+    if (checked)
+        upper.Lock();
+    else
+        upper.Free();
+}
+
+void MainWindow::on_lower_pos_spin_valueChanged(int arg1)
+{
+    qDebug() << "Setting Position to : " << (arg1/(3.1415926*lower.SpoolDiameter))<<endl;
+    lower.SetPosition(arg1/(3.1415926* lower.SpoolDiameter));
 }

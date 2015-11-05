@@ -2,6 +2,7 @@
 #include <sstream>
 #include <string.h>
 #include <cmath>
+#include <QDebug>
 
 #define CRLF "\x0D\x0A"
 
@@ -20,12 +21,14 @@
 
 using namespace std;
 
-Motor::Motor(QSerialPort *port, uint16_t ID)
-    : m_pPort(port)
-    , MotorID(ID)
+Motor::Motor()
+
+//Motor::Motor(QSerialPort *port, uint16_t ID)
+//    : m_pPort(port)
+//    , MotorID(ID)
     {
     logfile.open("log.txt",ios::out|ios::app);
-    logfile <<"Motor "<<ID<<" Open for communication"<<endl;
+    //logfile <<"Motor "<<ID<<" Open for communication"<<endl;
 
    // char sRxBuf[300]={};
    // stringstream cmd;
@@ -56,17 +59,19 @@ Motor::~Motor(void)
         logfile.close();
     }
 
-void Motor::Init(void)
+void Motor::Init(QSerialPort *port, uint16_t ID)
 {
-    stringstream cmd;
+    m_pPort = port;
+    MotorID = ID;
+   // stringstream cmd;
 
-    TALK_TO_MOTOR()
+   // TALK_TO_MOTOR()
 
-    cmd << "|2" << CRLF;        //Set current postion to be origin
-    m_pPort->write(cmd.str().c_str(),cmd.str().length());
-    cmd.clear();
+   // cmd << "|2" << CRLF;        //Set current postion to be origin
+   // m_pPort->write(cmd.str().c_str(),cmd.str().length());
+   // cmd.clear();
 
-    STOP_TALKING_TO_MOTOR()
+   // STOP_TALKING_TO_MOTOR()
 }
 
 bool Motor::SetHighResolution()
@@ -103,14 +108,17 @@ bool Motor::SetAcceleration(int Acceleration)
 
 bool Motor::SetSpeed(double Speed)
     {
-    //Speed vale here is in pulses
-    //in 1:1 encoder mode, there are 50,000 pulses for one rev/sec
-    speed = (int) round (Speed);
+    //speed units here are revs/sec
+    //there are 50,000 pulses per rev, so multiply the revs/sec by 50000
+    m_speed = Speed;
+    Speed*=50000;
+    int tmp = (int) round (Speed);
     stringstream cmd;
 
     TALK_TO_MOTOR()
 
-    cmd << "S=" << speed/10 << CRLF;
+    cmd << "S=" << tmp/10 << CRLF;
+    qDebug() << "S=" << tmp/10 << CRLF;
     logfile << cmd.str() <<endl;
     //logfile <<"setting speed" <<endl;
     m_pPort->write(cmd.str().c_str(),cmd.str().length());
@@ -122,7 +130,7 @@ bool Motor::SetSpeed(double Speed)
 double Motor::GetSpeed(void)
     {
         //returns revs /sec
-        return (double) speed;
+        return (double) m_speed;
     }
 
 
@@ -267,4 +275,20 @@ long int Motor::GetPosition()
 
     QByteArray tmp = line.mid(5);  // chomp the first 5 characters to leave just the number
     return (tmp.toLongLong());
+}
+
+void Motor::SetPosition(double pos)
+{
+    stringstream cmd;
+    int tmp = 50000 * pos;
+
+    TALK_TO_MOTOR()
+    cmd<<"A=100"<<CRLF;
+    cmd<<"S="<<m_speed<<CRLF;
+    cmd<<"P="<<tmp<<CRLF;
+    cmd<<"^"<<CRLF;
+    qDebug() << cmd.str().c_str();
+    m_pPort->write(cmd.str().c_str(),cmd.str().length());
+
+    STOP_TALKING_TO_MOTOR()
 }
