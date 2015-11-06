@@ -21,14 +21,16 @@ class Motor
         void   SetPosition(double);
         void Init(QSerialPort *port, uint16_t ID);
         long int GetPosition();
+        void SetDiameter(double);
+        void SetCircumference(double);
 
     public:
         int MotorID;
         QSerialPort *m_pPort;
+        double m_diameter;
+        double m_circumference;
     protected:
-        // Pointer to serial port
 
-        int m_portnum;
     public:
         bool Lock(void);
         bool Free(void);

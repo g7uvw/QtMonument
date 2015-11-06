@@ -108,17 +108,23 @@ bool Motor::SetAcceleration(int Acceleration)
 
 bool Motor::SetSpeed(double Speed)
     {
-    //speed units here are revs/sec
-    //there are 50,000 pulses per rev, so multiply the revs/sec by 50000
+    // Speed passed here is in mm/s
+    // with Resolution 50000, and speed unit 10, there are
+    // (5000/60) pulses per second, call this K
+    // we know our spool circumference, call it C
+    // The speed we want is Speed.
+    // Speed in pulses, for the motor is (K/(Speed/C))
+
+    double K = (5000/60);
+
     m_speed = Speed;
-    Speed*=50000;
-    int tmp = (int) round (Speed);
+    int pps = K/(Speed/m_circumference);
     stringstream cmd;
 
     TALK_TO_MOTOR()
 
-    cmd << "S=" << tmp/10 << CRLF;
-    qDebug() << "S=" << tmp/10 << CRLF;
+    cmd << "S=" << pps << CRLF;
+    qDebug() << "S=" << pps << CRLF;
     logfile << cmd.str() <<endl;
     //logfile <<"setting speed" <<endl;
     m_pPort->write(cmd.str().c_str(),cmd.str().length());
@@ -156,6 +162,7 @@ bool Motor::Lock(void)
 
     cmd << "(" << CRLF;
     m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    qDebug() << cmd.str().c_str();
 
     STOP_TALKING_TO_MOTOR()
 
@@ -173,6 +180,7 @@ bool Motor::Free(void)
     cmd.str("");
     cmd << ")" << CRLF;
     m_pPort->write(cmd.str().c_str(),cmd.str().length());
+    qDebug() << cmd.str().c_str();
 
     STOP_TALKING_TO_MOTOR()
 
@@ -291,4 +299,15 @@ void Motor::SetPosition(double pos)
     m_pPort->write(cmd.str().c_str(),cmd.str().length());
 
     STOP_TALKING_TO_MOTOR()
+}
+
+void Motor::SetDiameter(double tmp)
+{
+    m_diameter = tmp;
+    SetCircumference(m_diameter * 3.1415926);
+}
+
+void Motor::SetCircumference(double tmp)
+{
+    m_circumference = tmp;
 }

@@ -4,7 +4,9 @@
 #include <QMainWindow>
 #include "settingsdialog.h"
 #include "motor.h"
-
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
 namespace Ui {
 class MainWindow;
 }
@@ -40,12 +42,26 @@ private slots:
 
     void on_lower_pos_spin_valueChanged(int arg1);
 
+    void on_upper_speed_spin_valueChanged(int arg1);
+
+    void on_upper_pos_spin_valueChanged(int arg1);
+
+    void on_upper_diameter_spin_valueChanged(int arg1);
+
+    //void on_lower_enable_clicked(bool checked);
+
+    //void on_lower_enable_clicked();
+
 private:
     Ui::MainWindow *ui;
      QSerialPort *serial;
      SettingsDialog *settings;
     Motor upper;
     Motor lower;
+    QLabel *serialstatus;
+    QLabel *motor1status;
+    QLabel *motor2status;
+
 };
 
 #endif // MAINWINDOW_H

@@ -4,6 +4,8 @@
 #include "serial.h"
 #include "motor.h"
 #include <QtWidgets>
+#include <QMessageBox>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,6 +25,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     Motor lower();
     Motor upper();
+
+    serialstatus = new QLabel(this);
+    motor1status = new QLabel(this);
+    motor2status = new QLabel(this);
+
+    ui->statusBar->addPermanentWidget(serialstatus,1);
+    ui->statusBar->addPermanentWidget(motor1status,1);
+    ui->statusBar->addPermanentWidget(motor2status,1);
+    serialstatus->setText("Serial : Not connected");
 }
 
 MainWindow::~MainWindow()
@@ -36,6 +47,15 @@ void MainWindow::on_actionConnect_to_motors_triggered()
         openSerialPort();
         lower.Init(serial,1);
         upper.Init(serial,2);
+
+        upper.Free();
+        lower.Free();
+        motor1status->setText("Motor 1 : Free");
+        motor2status->setText("Motor 2 : Free");
+
+        lower.SetDiameter(ui->lower_diameter_spin->value());
+        upper.SetDiameter(ui->upper_diameter_spin->value());
+
 }
 
 void MainWindow::openSerialPort()
@@ -52,6 +72,7 @@ void MainWindow::openSerialPort()
             if (serial->open(QIODevice::ReadWrite))
             {
                    SerialOpen = true;
+                   serialstatus->setText("Serial : Connected");
                    qDebug()<<"Port open";
             }
             else
@@ -95,33 +116,96 @@ void MainWindow::on_actionComms_Settings_triggered()
 
 void MainWindow::on_lower_speed_spin_valueChanged(int arg1)
 {
-    lower.SpoolDiameter = ui->lower_diameter_spin->value();
-    double circumference = 3.1415926* lower.SpoolDiameter;
-    lower.SetSpeed(arg1 / circumference);
+    if (!serial->isOpen())
+        QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
+        return;
 
-    ui->upper_speed_spin->setValue( lower.m_speed * (ui->lower_diameter_spin->value() / ui->upper_diameter_spin->value()));
+    lower.SetSpeed(arg1);
+    ui->upper_speed_spin->setValue( lower.m_speed * (lower.m_circumference) / upper.m_circumference);
+    upper.SetSpeed(ui->upper_speed_spin->value());
 }
 
 
 
 void MainWindow::on_lower_enable_toggled(bool checked)
 {
+    if (!serial->isOpen())
+    {
+        QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
+        return;
+    }
+         qDebug() << "Lower hello";
     if (checked)
+    {
         lower.Lock();
+        motor1status->setText("Motor 1 - Enabled");
+    }
     else
+    {
         lower.Free();
+         motor1status->setText("Motor 1 - Free");
+    }
 }
 
 void MainWindow::on_upper_enable_toggled(bool checked)
 {
+    if (!serial->isOpen())
+    {
+        QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
+        return;
+    }
+ qDebug() << "Upper hello";
     if (checked)
+    {
         upper.Lock();
+        motor2status->setText("Motor 2 - Enabled");
+    }
     else
+    {
         upper.Free();
+         motor2status->setText("Motor 2 - Free");
+    }
 }
 
 void MainWindow::on_lower_pos_spin_valueChanged(int arg1)
 {
+    if (!serial->isOpen())
+    {
+        QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
+        return;
+    }
+
     qDebug() << "Setting Position to : " << (arg1/(3.1415926*lower.SpoolDiameter))<<endl;
     lower.SetPosition(arg1/(3.1415926* lower.SpoolDiameter));
 }
+
+void MainWindow::on_upper_speed_spin_valueChanged(int arg1)
+{
+    if (!serial->isOpen())
+    {
+        QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
+        return;
+    }
+
+    upper.SetSpeed(arg1);
+    ui->lower_speed_spin->setValue( upper.m_speed * (ui->lower_diameter_spin->value() / ui->upper_diameter_spin->value()));
+}
+
+void MainWindow::on_upper_pos_spin_valueChanged(int arg1)
+{
+    if (!serial->isOpen())
+    {
+        QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
+        return;
+    }
+
+    qDebug() << "Setting Position to : " << (arg1/(3.1415926*upper.SpoolDiameter))<<endl;
+    upper.SetPosition(arg1/(3.1415926* upper.SpoolDiameter));
+}
+
+void MainWindow::on_upper_diameter_spin_valueChanged(int arg1)
+{
+
+}
+
+
