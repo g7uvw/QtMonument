@@ -81,7 +81,7 @@ bool Motor::SetHighResolution()
 
     TALK_TO_MOTOR()
 
-    cmd << "K37=100" << CRLF; //Set 1:1 resolution with encoder
+    cmd << "K37=10" << CRLF; // Resolution = 50,000 PPR, Speed Unit = 10
     m_pPort->write(cmd.str().c_str(),cmd.str().length());
     cmd.clear();
 
@@ -115,10 +115,10 @@ bool Motor::SetSpeed(double Speed)
     // The speed we want is Speed.
     // Speed in pulses, for the motor is (K/(Speed/C))
 
-    double K = (5000/60);
+    double K = (50000/60);
 
-    m_speed = Speed;
-    int pps = K/(Speed/m_circumference);
+    m_speed = K * (Speed/m_circumference);
+    int pps = (int) round (m_speed);
     stringstream cmd;
 
     TALK_TO_MOTOR()
@@ -136,7 +136,7 @@ bool Motor::SetSpeed(double Speed)
 double Motor::GetSpeed(void)
     {
         //returns revs /sec
-        return (double) m_speed;
+        return (double) ((5000/60)* m_circumference)/ m_speed;
     }
 
 
@@ -267,7 +267,7 @@ void Motor::Run(long int length, int acceleration, int speed, int direction)
 
 
 
-long int Motor::GetPosition()
+double Motor::GetPosition()
 {
     stringstream cmd;
     QByteArray line;
@@ -282,13 +282,22 @@ long int Motor::GetPosition()
     else return -1;
 
     QByteArray tmp = line.mid(5);  // chomp the first 5 characters to leave just the number
-    return (tmp.toLongLong());
+    int tpos = tmp.toLongLong();
+
+    double pos = (m_circumference * tpos) / 50000;
+
+    return pos;
 }
 
 void Motor::SetPosition(double pos)
 {
     stringstream cmd;
-    int tmp = 50000 * pos;
+
+    double posfrac = pos/m_circumference;   // what fraction of circumfrence are we moving?
+
+    //There are 50000 pulses per rev in the mode we're using.
+
+    int tmp = 50000 * posfrac;
 
     TALK_TO_MOTOR()
     cmd<<"A=100"<<CRLF;
@@ -310,4 +319,14 @@ void Motor::SetDiameter(double tmp)
 void Motor::SetCircumference(double tmp)
 {
     m_circumference = tmp;
+}
+
+void Motor::SetZero()
+{
+     stringstream cmd;
+     TALK_TO_MOTOR()
+     cmd << "|2" << CRLF;
+     m_pPort->write(cmd.str().c_str(),cmd.str().length());
+
+     STOP_TALKING_TO_MOTOR()
 }

@@ -20,9 +20,10 @@ class Motor
         double GetSpeed(void);
         void   SetPosition(double);
         void Init(QSerialPort *port, uint16_t ID);
-        long int GetPosition();
+        double GetPosition();
         void SetDiameter(double);
         void SetCircumference(double);
+        void SetZero();
 
     public:
         int MotorID;

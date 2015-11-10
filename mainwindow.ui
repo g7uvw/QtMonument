@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1080</width>
-    <height>575</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Monument</string>
   </property>
@@ -31,7 +23,7 @@
          <item>
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Speed (mm/s)</string>
+            <string>Speed</string>
            </property>
           </widget>
          </item>
@@ -39,6 +31,9 @@
           <widget class="QSpinBox" name="lower_speed_spin">
            <property name="keyboardTracking">
             <bool>false</bool>
+           </property>
+           <property name="suffix">
+            <string>mm/s</string>
            </property>
            <property name="minimum">
             <number>-500</number>
@@ -55,7 +50,7 @@
          <item>
           <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>Position (mm)</string>
+            <string>Position</string>
            </property>
           </widget>
          </item>
@@ -63,6 +58,9 @@
           <widget class="QSpinBox" name="lower_pos_spin">
            <property name="keyboardTracking">
             <bool>false</bool>
+           </property>
+           <property name="suffix">
+            <string>mm</string>
            </property>
            <property name="minimum">
             <number>-40000</number>
@@ -75,6 +73,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="Lower_Pos_Zero">
+           <property name="text">
+            <string>Zero</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -82,7 +87,7 @@
          <item>
           <widget class="QLabel" name="label_7">
            <property name="text">
-            <string>Reel Diameter (mm)</string>
+            <string>Reel Diameter</string>
            </property>
           </widget>
          </item>
@@ -90,6 +95,9 @@
           <widget class="QSpinBox" name="lower_diameter_spin">
            <property name="keyboardTracking">
             <bool>false</bool>
+           </property>
+           <property name="suffix">
+            <string>mm</string>
            </property>
            <property name="minimum">
             <number>5</number>
@@ -108,16 +116,45 @@
         </layout>
        </item>
        <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="label_8">
          <property name="text">
-          <string>Distance to travel (mm)</string>
+          <string>Distance Traveled</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QSpinBox" name="lower_distance">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::NoButtons</enum>
+         </property>
          <property name="keyboardTracking">
           <bool>false</bool>
+         </property>
+         <property name="suffix">
+          <string>mm</string>
          </property>
         </widget>
        </item>
@@ -150,14 +187,20 @@
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Speed (mm/s)</string>
+            <string>Speed</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QSpinBox" name="upper_speed_spin">
+           <property name="cursor">
+            <cursorShape>ArrowCursor</cursorShape>
+           </property>
            <property name="keyboardTracking">
             <bool>false</bool>
+           </property>
+           <property name="suffix">
+            <string>mm/s</string>
            </property>
            <property name="minimum">
             <number>-500</number>
@@ -174,14 +217,23 @@
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Position (mm)</string>
+            <string>Position</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QSpinBox" name="upper_pos_spin">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
            <property name="keyboardTracking">
             <bool>false</bool>
+           </property>
+           <property name="suffix">
+            <string>mm</string>
            </property>
            <property name="minimum">
             <number>-40000</number>
@@ -198,7 +250,7 @@
          <item>
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>Reel Diameter (mm)</string>
+            <string>Reel Diameter</string>
            </property>
           </widget>
          </item>
@@ -206,6 +258,9 @@
           <widget class="QSpinBox" name="upper_diameter_spin">
            <property name="keyboardTracking">
             <bool>false</bool>
+           </property>
+           <property name="suffix">
+            <string>mm</string>
            </property>
            <property name="minimum">
             <number>5</number>
@@ -221,16 +276,45 @@
         </layout>
        </item>
        <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Distance to travel (mm)</string>
+          <string>Distance Traveled</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QSpinBox" name="upper_distance">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::NoButtons</enum>
+         </property>
          <property name="keyboardTracking">
           <bool>false</bool>
+         </property>
+         <property name="suffix">
+          <string>mm</string>
          </property>
         </widget>
        </item>
@@ -263,12 +347,15 @@
          <item>
           <widget class="QLabel" name="label_9">
            <property name="text">
-            <string>Speed (mm/s)</string>
+            <string>ΔSpeed</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QSpinBox" name="jog_speed_spin">
+           <property name="suffix">
+            <string>mm/s</string>
+           </property>
            <property name="minimum">
             <number>-20</number>
            </property>
@@ -308,12 +395,15 @@
          <item>
           <widget class="QLabel" name="label_10">
            <property name="text">
-            <string>Position (mm)</string>
+            <string>ΔPosition</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QSpinBox" name="jog_pos_spin">
+           <property name="suffix">
+            <string>mm</string>
+           </property>
            <property name="minimum">
             <number>-40000</number>
            </property>
@@ -347,6 +437,26 @@
           </widget>
          </item>
         </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="EMERGENCY_STOP">
@@ -419,7 +529,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1080</width>
+     <width>1054</width>
      <height>21</height>
     </rect>
    </property>

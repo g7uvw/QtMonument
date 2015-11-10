@@ -26,6 +26,7 @@ public slots:
     void handleError(QSerialPort::SerialPortError error);
     void openSerialPort();
     void closeSerialPort();
+    void GetPositions();
 
 private slots:
     void on_actionConnect_to_motors_triggered();
@@ -52,6 +53,8 @@ private slots:
 
     //void on_lower_enable_clicked();
 
+    void on_Lower_Pos_Zero_clicked();
+
 private:
     Ui::MainWindow *ui;
      QSerialPort *serial;
@@ -61,6 +64,7 @@ private:
     QLabel *serialstatus;
     QLabel *motor1status;
     QLabel *motor2status;
+    QTimer *timer;
 
 };
 

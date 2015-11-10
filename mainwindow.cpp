@@ -5,6 +5,7 @@
 #include "motor.h"
 #include <QtWidgets>
 #include <QMessageBox>
+#include <QTimer>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -34,11 +35,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusBar->addPermanentWidget(motor1status,1);
     ui->statusBar->addPermanentWidget(motor2status,1);
     serialstatus->setText("Serial : Not connected");
+
+    //update timer
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(GetPositions()));
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::GetPositions()
+{
+
+    ui->lower_distance->setValue(lower.GetPosition());
 }
 
 void MainWindow::on_actionConnect_to_motors_triggered()
@@ -55,6 +67,8 @@ void MainWindow::on_actionConnect_to_motors_triggered()
 
         lower.SetDiameter(ui->lower_diameter_spin->value());
         upper.SetDiameter(ui->upper_diameter_spin->value());
+
+        timer->start(100);
 
 }
 
@@ -134,7 +148,7 @@ void MainWindow::on_lower_enable_toggled(bool checked)
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
     }
-         qDebug() << "Lower hello";
+
     if (checked)
     {
         lower.Lock();
@@ -154,7 +168,7 @@ void MainWindow::on_upper_enable_toggled(bool checked)
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
     }
- qDebug() << "Upper hello";
+
     if (checked)
     {
         upper.Lock();
@@ -174,9 +188,9 @@ void MainWindow::on_lower_pos_spin_valueChanged(int arg1)
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
     }
-
-    qDebug() << "Setting Position to : " << (arg1/(3.1415926*lower.SpoolDiameter))<<endl;
-    lower.SetPosition(arg1/(3.1415926* lower.SpoolDiameter));
+    lower.SetSpeed(ui->lower_speed_spin->value());
+    lower.SetDiameter(ui->lower_diameter_spin->value());
+    lower.SetPosition(arg1);
 }
 
 void MainWindow::on_upper_speed_spin_valueChanged(int arg1)
@@ -193,19 +207,18 @@ void MainWindow::on_upper_speed_spin_valueChanged(int arg1)
 
 void MainWindow::on_upper_pos_spin_valueChanged(int arg1)
 {
-    if (!serial->isOpen())
-    {
-        QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
-        return;
-    }
 
-    qDebug() << "Setting Position to : " << (arg1/(3.1415926*upper.SpoolDiameter))<<endl;
-    upper.SetPosition(arg1/(3.1415926* upper.SpoolDiameter));
 }
 
 void MainWindow::on_upper_diameter_spin_valueChanged(int arg1)
 {
-
+    upper.SetDiameter(arg1);
 }
 
 
+
+void MainWindow::on_Lower_Pos_Zero_clicked()
+{
+   ui->lower_pos_spin->setValue(0);
+   lower.SetZero();
+}
