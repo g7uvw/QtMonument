@@ -12,11 +12,11 @@ class Motor
         //Motor(QSerialPort *port, uint16_t ID);
         //Motor( int portnum, char ID);
         virtual ~Motor(void);
-        bool SetAcceleration(int Acceleration);
-        bool SetHighResolution();
-        bool EmergencyStop(void);
-        bool SetSpeed(double Speed);
-        bool SetDirection(bool Clockwise);
+        void SetAcceleration(int Acceleration);
+        void SetHighResolution();
+        void EmergencyStop(void);
+        void SetSpeed(double Speed);
+        void SetDirection(bool Clockwise);
         double GetSpeed(void);
         void   SetPosition(double);
         void Init(QSerialPort *port, uint16_t ID);
@@ -24,17 +24,21 @@ class Motor
         void SetDiameter(double);
         void SetCircumference(double);
         void SetZero();
+        void delay( int millisecondsToWait );
 
     public:
         int MotorID;
         QSerialPort *m_pPort;
         double m_diameter;
         double m_circumference;
+        bool TX_LOCKOUT;
+        void TALK_TO_MOTOR(std::stringstream& cmd);
+        void STOP_TALKING_TO_MOTOR(std::stringstream& cmd);
     protected:
 
     public:
-        bool Lock(void);
-        bool Free(void);
+        void Lock(void);
+        void Free(void);
         bool Locked;
         double  m_speed;
         void Demo(void);

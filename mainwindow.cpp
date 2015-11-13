@@ -49,7 +49,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::GetPositions()
 {
-
+    qApp->processEvents();
+    //qDebug()<<lower.GetPosition();
     ui->lower_distance->setValue(lower.GetPosition());
 }
 
@@ -68,7 +69,7 @@ void MainWindow::on_actionConnect_to_motors_triggered()
         lower.SetDiameter(ui->lower_diameter_spin->value());
         upper.SetDiameter(ui->upper_diameter_spin->value());
 
-        timer->start(100);
+       timer->start(5000);
 
 }
 
