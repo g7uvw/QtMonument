@@ -25,6 +25,8 @@ class Motor
         void SetCircumference(double);
         void SetZero();
         void delay( int millisecondsToWait );
+        QByteArray ReadData(void);
+        QByteArray SendCommand(std::stringstream& cmd);
 
     public:
         int MotorID;
@@ -41,7 +43,6 @@ class Motor
         void Free(void);
         bool Locked;
         double  m_speed;
-        void Demo(void);
         void Run(long int length, int acceleration, int speed, int direction);
         std::ofstream logfile;
 
