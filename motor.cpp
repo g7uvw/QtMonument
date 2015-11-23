@@ -211,7 +211,7 @@ qDebug() << "Get Position";
     QByteArray line;
     TALK_TO_MOTOR(cmd);
     cmd << "?96" << CRLF;
-   line =  SendCommand(cmd);
+    line =  SendCommand(cmd);
 qDebug() << line;
 
 unsigned int count = 0;
