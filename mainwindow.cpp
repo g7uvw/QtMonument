@@ -69,7 +69,7 @@ void MainWindow::on_actionConnect_to_motors_triggered()
         lower.SetDiameter(ui->lower_diameter_spin->value());
         upper.SetDiameter(ui->upper_diameter_spin->value());
 
-       timer->start(5000);
+       timer->start(1000);
 
 }
 

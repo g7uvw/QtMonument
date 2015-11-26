@@ -16,6 +16,7 @@ void Motor::TALK_TO_MOTOR(stringstream& cmd)
     cmd.clear();
     cmd << "{" << MotorID << CRLF;
     SendCommand(cmd);
+    cmd.str("");
     cmd.clear();
 }
 
@@ -24,6 +25,7 @@ void Motor::STOP_TALKING_TO_MOTOR( stringstream& cmd)
     cmd.clear();
     cmd << "{0" << CRLF;
     SendCommand(cmd);
+    cmd.str("");
     cmd.clear();
 }
 
@@ -204,69 +206,52 @@ void Motor::Run(long int length, int acceleration, int speed, int direction)
 
 double Motor::GetPosition()
 {
-    if (!TX_LOCKOUT)
-    {
-qDebug() << "Get Position";
     stringstream cmd;
     QByteArray line;
-    TALK_TO_MOTOR(cmd);
-    cmd << "?96" << CRLF;
-    line =  SendCommand(cmd);
-qDebug() << line;
+    cmd.str("");
+    cmd.clear();
 
-unsigned int count = 0;
-
-    while (1)
+    if (!TX_LOCKOUT)
     {
-        if (count > 15)
-        {
-            cmd.clear();
-            cmd << "?96" << CRLF;
-            SendCommand(cmd);
-        }
+        qDebug() << "Get Position";
 
-        if (count > 20)
-        {
-            break;
-        }
+        TALK_TO_MOTOR(cmd);
+        cmd << "?96" << CRLF;
+        line =  SendCommand(cmd);
+        //qDebug() << line;
+        line.clear();
+        cmd.str("");
+        cmd.clear();
+        cmd << CRLF;
+        line =  SendCommand(cmd);
 
-        line = ReadData();
-
-        while (line.isEmpty())
-        {
-            line.clear();
-            line = ReadData();
-            qDebug() <<"Empty";
-        }
         if (line.at(0) == 'P')
         {
-            qDebug()<< "I'll have a P please Bob";
-            break;
+            //qDebug()<< "I'll have a P please Bob";
+            QByteArray tmp = line.mid(5);  // chomp the first 5 characters to leave just the number
+            //qDebug() <<"Chomped first 5 chars " << tmp;
+            std::string position = tmp.toStdString();
+            int tpos = atoi (position.c_str());
+            //qDebug()<< "converted to longs"  <<tpos;
+            double pos = (m_circumference * tpos) / 50000;
+            //qDebug()<<"converted to actual position" << pos;
+            STOP_TALKING_TO_MOTOR(cmd);
+            return pos;
         }
-        line.clear();
-        count ++;
+
+        else
+        {
+            STOP_TALKING_TO_MOTOR(cmd);
+            return -1;
+        }
+
     }
 
-
-
-    qDebug() << "--------------";
-    qDebug()<< "line =" << line;
-
-    QByteArray tmp = line.mid(5);  // chomp the first 5 characters to leave just the number
-
-    qDebug() <<"Chomped first 5 chars " << tmp;
-
-    int tpos = tmp.toLongLong();
-
-    qDebug()<< "converted to longs"  <<tpos;
-
-    double pos = (m_circumference * tpos) / 50000;
-    qDebug()<<"converted to actual position" << pos;
-   STOP_TALKING_TO_MOTOR(cmd);
-    return pos;
+    else
+    {
+        STOP_TALKING_TO_MOTOR(cmd);
+        return -1;
     }
-
-    else return -1;
 }
 
 void Motor::SetPosition(double pos)
@@ -292,8 +277,7 @@ void Motor::SetPosition(double pos)
     SendCommand(cmd);
 
    STOP_TALKING_TO_MOTOR(cmd);
-    qDebug()<<"----";
-    TX_LOCKOUT = false;
+   TX_LOCKOUT = false;
 }
 
 void Motor::SetDiameter(double tmp)
@@ -335,7 +319,10 @@ QByteArray Motor::ReadData()
 QByteArray Motor::SendCommand(stringstream& cmd)
 {
     m_pPort->write(cmd.str().c_str(),cmd.str().length());
-    m_pPort->waitForBytesWritten(20);
+    m_pPort->waitForBytesWritten(0);
+    //qDebug() << "Sent command " << cmd.str().c_str();
+    cmd.str("");
     cmd.clear();
-    return ReadData();
+    delay(10);
+    return  m_pPort->readLine();
 }

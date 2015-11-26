@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1054</width>
+    <height>362</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Monument</string>
   </property>
@@ -155,6 +163,12 @@
          </property>
          <property name="suffix">
           <string>mm</string>
+         </property>
+         <property name="minimum">
+          <number>-60000</number>
+         </property>
+         <property name="maximum">
+          <number>60000</number>
          </property>
         </widget>
        </item>
@@ -315,6 +329,12 @@
          </property>
          <property name="suffix">
           <string>mm</string>
+         </property>
+         <property name="minimum">
+          <number>-60000</number>
+         </property>
+         <property name="maximum">
+          <number>60000</number>
          </property>
         </widget>
        </item>
