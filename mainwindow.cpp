@@ -51,7 +51,11 @@ void MainWindow::GetPositions()
 {
     qApp->processEvents();
     //qDebug()<<lower.GetPosition();
-    ui->lower_distance->setValue(lower.GetPosition());
+    int tp = lower.GetPosition();
+    if (tp != -1)
+    {
+        ui->lower_distance->setValue(tp);
+    }
 }
 
 void MainWindow::on_actionConnect_to_motors_triggered()
@@ -69,7 +73,7 @@ void MainWindow::on_actionConnect_to_motors_triggered()
         lower.SetDiameter(ui->lower_diameter_spin->value());
         upper.SetDiameter(ui->upper_diameter_spin->value());
 
-       timer->start(1000);
+       timer->start(500);
 
 }
 
@@ -222,4 +226,15 @@ void MainWindow::on_Lower_Pos_Zero_clicked()
 {
    ui->lower_pos_spin->setValue(0);
    lower.SetZero();
+}
+
+void MainWindow::on_EMERGENCY_STOP_clicked()
+{
+    upper.EmergencyStop();
+    lower.EmergencyStop();
+}
+
+void MainWindow::on_upper_speed_spin_editingFinished()
+{
+
 }

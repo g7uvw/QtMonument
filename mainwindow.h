@@ -55,6 +55,10 @@ private slots:
 
     void on_Lower_Pos_Zero_clicked();
 
+    void on_EMERGENCY_STOP_clicked();
+
+    void on_upper_speed_spin_editingFinished();
+
 private:
     Ui::MainWindow *ui;
      QSerialPort *serial;

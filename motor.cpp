@@ -32,16 +32,16 @@ void Motor::STOP_TALKING_TO_MOTOR( stringstream& cmd)
 
 
 Motor::Motor()
-    {
+{
     logfile.open("log.txt",ios::out|ios::app);
     TX_LOCKOUT = false;
-    }
+}
 
 
 Motor::~Motor(void)
-    {
-        logfile.close();
-    }
+{
+    logfile.close();
+}
 
 void Motor::Init(QSerialPort *port, uint16_t ID)
 {
@@ -50,39 +50,35 @@ void Motor::Init(QSerialPort *port, uint16_t ID)
 }
 
 void Motor::SetHighResolution()
-    {
+{
     TX_LOCKOUT = true;
     stringstream cmd;
-
+    cmd.str("");
+    cmd.clear();
     TALK_TO_MOTOR(cmd);
-
     cmd << "K37=10" << CRLF; // Resolution = 50,000 PPR, Speed Unit = 10
     SendCommand(cmd);
-
     STOP_TALKING_TO_MOTOR(cmd);
     TX_LOCKOUT = false;
-
-    }
+}
 
 void Motor::SetAcceleration(int Acceleration)
-    {
+{
     TX_LOCKOUT = true;
     stringstream cmd;
-
+    cmd.str("");
+    cmd.clear();
     TALK_TO_MOTOR(cmd);
-
     cmd << "A=" << Acceleration << CRLF;
     SendCommand(cmd);
-
     STOP_TALKING_TO_MOTOR(cmd);
     TX_LOCKOUT = false;
-
-    }
+}
 
 
 
 void Motor::SetSpeed(double Speed)
-    {
+{
     // Speed passed here is in mm/s
     // with Resolution 50000, and speed unit 10, there are
     // (5000/60) pulses per second, call this K
@@ -90,36 +86,36 @@ void Motor::SetSpeed(double Speed)
     // The speed we want is Speed.
     // Speed in pulses, for the motor is (K/(Speed/C))
     TX_LOCKOUT = true;
-    qDebug()<<"----";
-    qDebug()<<"SetSpeed";
+    //    qDebug()<<"----";
+    //    qDebug()<<"SetSpeed";
 
     double K = (50000/60);
 
     m_speed = K * (Speed/m_circumference);
     int pps = (int) round (m_speed);
     stringstream cmd;
-
+    cmd.str("");
+    cmd.clear();
     TALK_TO_MOTOR(cmd);
 
     cmd << "S=" << pps << CRLF;
     SendCommand(cmd);
-    qDebug() << "S=" << pps << CRLF;
+    //qDebug() << "S=" << pps << CRLF;
 
     STOP_TALKING_TO_MOTOR(cmd);
-
-    qDebug()<<"----";
+    //qDebug()<<"----";
     TX_LOCKOUT = false;
-    }
+}
 
 double Motor::GetSpeed(void)
-    {
-        //returns revs /sec
-        return (double) ((5000/60)* m_circumference)/ m_speed;
-    }
+{
+    //returns revs /sec
+    return (double) ((5000/60)* m_circumference)/ m_speed;
+}
 
 
 void Motor::EmergencyStop(void)
-    {
+{
     TX_LOCKOUT = true;
     stringstream cmd;
 
@@ -131,10 +127,10 @@ void Motor::EmergencyStop(void)
     STOP_TALKING_TO_MOTOR(cmd);
 
     TX_LOCKOUT = false;
-    }
+}
 
 void Motor::Lock(void)
-    {
+{
     TX_LOCKOUT = true;
     stringstream cmd;
     TALK_TO_MOTOR(cmd);
@@ -147,10 +143,10 @@ void Motor::Lock(void)
 
     Locked = true;
     TX_LOCKOUT = false;
-    }
+}
 
 void Motor::Free(void)
-    {
+{
     TX_LOCKOUT = true;
     stringstream cmd;
     TALK_TO_MOTOR(cmd);
@@ -163,16 +159,16 @@ void Motor::Free(void)
 
     Locked = false;
     TX_LOCKOUT = false;
-    }
+}
 
 void Motor::Run(long int length, int acceleration, int speed, int direction)
-    {
+{
     TX_LOCKOUT = true;
     //length is in pulse counts. In 1:1 encoder mode, 50k pulses is one revolution.
 
     stringstream cmd;
 
-     TALK_TO_MOTOR(cmd);
+    TALK_TO_MOTOR(cmd);
 
     double runspeed = speed / 10.0;
     //speed /=10;	//fix speed issue. Even with correct settinsg we're still 10x too fast.
@@ -202,7 +198,7 @@ void Motor::Run(long int length, int acceleration, int speed, int direction)
     //log comands to file
     logfile << cmd.str() <<endl;
     TX_LOCKOUT = false;
-    }
+}
 
 double Motor::GetPosition()
 {
@@ -213,7 +209,7 @@ double Motor::GetPosition()
 
     if (!TX_LOCKOUT)
     {
-        qDebug() << "Get Position";
+        //qDebug() << "Get Position";
 
         TALK_TO_MOTOR(cmd);
         cmd << "?96" << CRLF;
@@ -224,19 +220,28 @@ double Motor::GetPosition()
         cmd.clear();
         cmd << CRLF;
         line =  SendCommand(cmd);
-
-        if (line.at(0) == 'P')
+        if (!line.isEmpty())
         {
-            //qDebug()<< "I'll have a P please Bob";
-            QByteArray tmp = line.mid(5);  // chomp the first 5 characters to leave just the number
-            //qDebug() <<"Chomped first 5 chars " << tmp;
-            std::string position = tmp.toStdString();
-            int tpos = atoi (position.c_str());
-            //qDebug()<< "converted to longs"  <<tpos;
-            double pos = (m_circumference * tpos) / 50000;
-            //qDebug()<<"converted to actual position" << pos;
-            STOP_TALKING_TO_MOTOR(cmd);
-            return pos;
+            if (line.at(0) == 'P')
+            {
+                //qDebug()<< "I'll have a P please Bob";
+                QByteArray tmp = line.mid(5);  // chomp the first 5 characters to leave just the number
+                //qDebug() <<"Chomped first 5 chars " << tmp;
+                std::string position = tmp.toStdString();
+                int tpos = atoi (position.c_str());
+                //qDebug()<< "converted to longs"  <<tpos;
+                double pos = (m_circumference * tpos) / 50000;
+                //qDebug()<<"converted to actual position" << pos;
+                STOP_TALKING_TO_MOTOR(cmd);
+                return pos;
+            }
+
+            else
+            {
+                STOP_TALKING_TO_MOTOR(cmd);
+                return -1;
+            }
+
         }
 
         else
@@ -244,14 +249,13 @@ double Motor::GetPosition()
             STOP_TALKING_TO_MOTOR(cmd);
             return -1;
         }
-
     }
-
     else
     {
         STOP_TALKING_TO_MOTOR(cmd);
         return -1;
     }
+
 }
 
 void Motor::SetPosition(double pos)
@@ -275,9 +279,8 @@ void Motor::SetPosition(double pos)
     cmd<<"^"<<CRLF;
     qDebug() << cmd.str().c_str();
     SendCommand(cmd);
-
-   STOP_TALKING_TO_MOTOR(cmd);
-   TX_LOCKOUT = false;
+    STOP_TALKING_TO_MOTOR(cmd);
+    TX_LOCKOUT = false;
 }
 
 void Motor::SetDiameter(double tmp)
@@ -295,6 +298,8 @@ void Motor::SetZero()
 {
     TX_LOCKOUT = true;
     stringstream cmd;
+    cmd.str("");
+    cmd.clear();
     TALK_TO_MOTOR(cmd);
     cmd << "|2" << CRLF;
     SendCommand(cmd);
