@@ -15,6 +15,7 @@ class Motor
         void SetAcceleration(int Acceleration);
         void SetHighResolution();
         void EmergencyStop(void);
+        void Resume(void);
         void SetSpeed(double Speed);
         void SetDirection(bool Clockwise);
         double GetSpeed(void);
@@ -42,11 +43,13 @@ class Motor
         void Lock(void);
         void Free(void);
         bool Locked;
-        double  m_speed;
+        double  m_motorspeed;
+        double m_mmpsspeed;
+        void Run(double pos);
         void Run(long int length, int acceleration, int speed, int direction);
         std::ofstream logfile;
 
-        int SpoolDiameter;
+        unsigned int SpoolDiameter;
 
     };
 

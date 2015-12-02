@@ -41,7 +41,7 @@
             <bool>false</bool>
            </property>
            <property name="suffix">
-            <string>mm/s</string>
+            <string> mm/s</string>
            </property>
            <property name="minimum">
             <number>-500</number>
@@ -68,7 +68,7 @@
             <bool>false</bool>
            </property>
            <property name="suffix">
-            <string>mm</string>
+            <string> mm</string>
            </property>
            <property name="minimum">
             <number>-40000</number>
@@ -100,24 +100,15 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="lower_diameter_spin">
+          <widget class="QDoubleSpinBox" name="lower_diameter_spin">
            <property name="keyboardTracking">
             <bool>false</bool>
            </property>
            <property name="suffix">
-            <string>mm</string>
-           </property>
-           <property name="minimum">
-            <number>5</number>
-           </property>
-           <property name="maximum">
-            <number>500</number>
-           </property>
-           <property name="singleStep">
-            <number>1</number>
+            <string> mm</string>
            </property>
            <property name="value">
-            <number>35</number>
+            <double>35.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -162,7 +153,7 @@
           <bool>false</bool>
          </property>
          <property name="suffix">
-          <string>mm</string>
+          <string> mm</string>
          </property>
          <property name="minimum">
           <number>-60000</number>
@@ -206,21 +197,21 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="upper_speed_spin">
+          <widget class="QDoubleSpinBox" name="upper_speed_spin">
            <property name="cursor">
             <cursorShape>ArrowCursor</cursorShape>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
            <property name="keyboardTracking">
             <bool>false</bool>
            </property>
            <property name="suffix">
-            <string>mm/s</string>
+            <string> mm/s</string>
            </property>
-           <property name="minimum">
-            <number>-500</number>
-           </property>
-           <property name="maximum">
-            <number>500</number>
+           <property name="decimals">
+            <number>3</number>
            </property>
           </widget>
          </item>
@@ -237,6 +228,9 @@
          </item>
          <item>
           <widget class="QSpinBox" name="upper_pos_spin">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -247,7 +241,7 @@
             <bool>false</bool>
            </property>
            <property name="suffix">
-            <string>mm</string>
+            <string> mm</string>
            </property>
            <property name="minimum">
             <number>-40000</number>
@@ -269,21 +263,15 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="upper_diameter_spin">
+          <widget class="QDoubleSpinBox" name="upper_diameter_spin">
            <property name="keyboardTracking">
             <bool>false</bool>
            </property>
            <property name="suffix">
-            <string>mm</string>
-           </property>
-           <property name="minimum">
-            <number>5</number>
-           </property>
-           <property name="maximum">
-            <number>500</number>
+            <string> mm</string>
            </property>
            <property name="value">
-            <number>35</number>
+            <double>35.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -328,13 +316,16 @@
           <bool>false</bool>
          </property>
          <property name="suffix">
-          <string>mm</string>
+          <string> mm</string>
          </property>
          <property name="minimum">
           <number>-60000</number>
          </property>
          <property name="maximum">
           <number>60000</number>
+         </property>
+         <property name="value">
+          <number>0</number>
          </property>
         </widget>
        </item>
@@ -372,15 +363,18 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="jog_speed_spin">
+          <widget class="QDoubleSpinBox" name="jog_speed_spin">
            <property name="suffix">
-            <string>mm/s</string>
+            <string> mm/s</string>
+           </property>
+           <property name="decimals">
+            <number>3</number>
            </property>
            <property name="minimum">
-            <number>-20</number>
+            <double>-90.000000000000000</double>
            </property>
-           <property name="maximum">
-            <number>20</number>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
            </property>
           </widget>
          </item>
@@ -420,15 +414,12 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="jog_pos_spin">
+          <widget class="QDoubleSpinBox" name="jog_pos_spin">
            <property name="suffix">
-            <string>mm</string>
+            <string> mm</string>
            </property>
-           <property name="minimum">
-            <number>-40000</number>
-           </property>
-           <property name="maximum">
-            <number>40000</number>
+           <property name="decimals">
+            <number>1</number>
            </property>
           </widget>
          </item>
@@ -440,7 +431,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Save Position</string>
+            <string>Save Pos</string>
            </property>
           </widget>
          </item>
@@ -452,7 +443,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Restore Position</string>
+            <string>Restore Pos</string>
            </property>
           </widget>
          </item>

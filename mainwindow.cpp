@@ -51,10 +51,15 @@ void MainWindow::GetPositions()
 {
     qApp->processEvents();
     //qDebug()<<lower.GetPosition();
-    int tp = lower.GetPosition();
-    if (tp != -1)
+    int lp = lower.GetPosition();
+    int up = upper.GetPosition();
+    if (lp != -1)
     {
-        ui->lower_distance->setValue(tp);
+        ui->lower_distance->setValue(lp);
+    }
+    if (up != -1)
+    {
+        ui->upper_distance->setValue(up);
     }
 }
 
@@ -69,6 +74,8 @@ void MainWindow::on_actionConnect_to_motors_triggered()
         lower.Free();
         motor1status->setText("Motor 1 : Free");
         motor2status->setText("Motor 2 : Free");
+
+        E_STOPPED = false;
 
         lower.SetDiameter(ui->lower_diameter_spin->value());
         upper.SetDiameter(ui->upper_diameter_spin->value());
@@ -136,12 +143,15 @@ void MainWindow::on_actionComms_Settings_triggered()
 void MainWindow::on_lower_speed_spin_valueChanged(int arg1)
 {
     if (!serial->isOpen())
+    {
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
+    }
 
     lower.SetSpeed(arg1);
-    ui->upper_speed_spin->setValue( lower.m_speed * (lower.m_circumference) / upper.m_circumference);
-    upper.SetSpeed(ui->upper_speed_spin->value());
+    float uppertmp = arg1 * (lower.m_circumference / upper.m_circumference);
+    ui->upper_speed_spin->setValue( arg1 * (lower.m_circumference / upper.m_circumference));
+    upper.SetSpeed(arg1 * (lower.m_circumference / upper.m_circumference));
 }
 
 
@@ -198,24 +208,9 @@ void MainWindow::on_lower_pos_spin_valueChanged(int arg1)
     lower.SetPosition(arg1);
 }
 
-void MainWindow::on_upper_speed_spin_valueChanged(int arg1)
-{
-    if (!serial->isOpen())
-    {
-        QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
-        return;
-    }
 
-    upper.SetSpeed(arg1);
-    ui->lower_speed_spin->setValue( upper.m_speed * (ui->lower_diameter_spin->value() / ui->upper_diameter_spin->value()));
-}
 
-void MainWindow::on_upper_pos_spin_valueChanged(int arg1)
-{
-
-}
-
-void MainWindow::on_upper_diameter_spin_valueChanged(int arg1)
+void MainWindow::on_upper_diameter_spin_valueChanged(double arg1)
 {
     upper.SetDiameter(arg1);
 }
@@ -230,11 +225,43 @@ void MainWindow::on_Lower_Pos_Zero_clicked()
 
 void MainWindow::on_EMERGENCY_STOP_clicked()
 {
-    upper.EmergencyStop();
-    lower.EmergencyStop();
+    if (E_STOPPED)
+    {
+        ui->EMERGENCY_STOP->setText("Emergency Stop");
+        lower.Resume();
+        upper.Resume();
+        E_STOPPED = false;
+    }
+    else
+    {
+        upper.EmergencyStop();
+        lower.EmergencyStop();
+        E_STOPPED = true;
+        ui->EMERGENCY_STOP->setText("Resume...");
+    }
 }
 
 void MainWindow::on_upper_speed_spin_editingFinished()
 {
 
+}
+
+void MainWindow::on_RUN_clicked()
+{
+    upper.Lock();
+    lower.Lock();
+    lower.Run(ui->lower_pos_spin->value());
+    upper.Run(ui->lower_pos_spin->value());
+}
+
+
+
+void MainWindow::on_lower_diameter_spin_valueChanged(double arg1)
+{
+    lower.SetDiameter(arg1);
+}
+
+void MainWindow::on_jog_speed_spin_valueChanged(double arg1)
+{
+    upper.SetSpeed(upper.GetSpeed()+ arg1);
 }

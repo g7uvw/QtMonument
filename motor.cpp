@@ -47,6 +47,7 @@ void Motor::Init(QSerialPort *port, uint16_t ID)
 {
     m_pPort = port;
     MotorID = ID;
+    SetHighResolution();
 }
 
 void Motor::SetHighResolution()
@@ -90,9 +91,9 @@ void Motor::SetSpeed(double Speed)
     //    qDebug()<<"SetSpeed";
 
     double K = (50000/60);
-
-    m_speed = K * (Speed/m_circumference);
-    int pps = (int) round (m_speed);
+    m_mmpsspeed = Speed;
+    m_motorspeed = K * (Speed/m_circumference);
+    int pps = (int) round (m_motorspeed);
     stringstream cmd;
     cmd.str("");
     cmd.clear();
@@ -109,8 +110,8 @@ void Motor::SetSpeed(double Speed)
 
 double Motor::GetSpeed(void)
 {
-    //returns revs /sec
-    return (double) ((5000/60)* m_circumference)/ m_speed;
+    //returns mm/s
+    return m_mmpsspeed;
 }
 
 
@@ -122,6 +123,21 @@ void Motor::EmergencyStop(void)
     TALK_TO_MOTOR(cmd);
 
     cmd << "]" << CRLF;
+    SendCommand(cmd);
+
+    STOP_TALKING_TO_MOTOR(cmd);
+
+    TX_LOCKOUT = false;
+}
+
+void Motor::Resume(void)
+{
+    TX_LOCKOUT = true;
+    stringstream cmd;
+
+    TALK_TO_MOTOR(cmd);
+
+    cmd << "^" << CRLF;
     SendCommand(cmd);
 
     STOP_TALKING_TO_MOTOR(cmd);
@@ -200,6 +216,28 @@ void Motor::Run(long int length, int acceleration, int speed, int direction)
     TX_LOCKOUT = false;
 }
 
+void Motor::Run(double pos)
+{
+     TX_LOCKOUT = true;
+     stringstream cmd;
+
+     double posfrac = pos/m_circumference;   // what fraction of circumfrence are we moving?
+
+     //There are 50000 pulses per rev in the mode we're using.
+
+     int tmp = 50000 * posfrac;
+
+     TALK_TO_MOTOR(cmd);
+     cmd<<"A=100"<<CRLF;
+     cmd<<"S="<<m_motorspeed<<CRLF;
+     cmd<<"P="<<tmp<<CRLF;
+     cmd<<"^"<<CRLF;
+     qDebug() << cmd.str().c_str();
+     SendCommand(cmd);
+     STOP_TALKING_TO_MOTOR(cmd);
+     TX_LOCKOUT = false;
+}
+
 double Motor::GetPosition()
 {
     stringstream cmd;
@@ -274,9 +312,9 @@ void Motor::SetPosition(double pos)
 
     TALK_TO_MOTOR(cmd);
     cmd<<"A=100"<<CRLF;
-    cmd<<"S="<<m_speed<<CRLF;
+    cmd<<"S="<<m_motorspeed<<CRLF;
     cmd<<"P="<<tmp<<CRLF;
-    cmd<<"^"<<CRLF;
+    //cmd<<"^"<<CRLF;
     qDebug() << cmd.str().c_str();
     SendCommand(cmd);
     STOP_TALKING_TO_MOTOR(cmd);

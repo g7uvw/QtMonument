@@ -43,11 +43,7 @@ private slots:
 
     void on_lower_pos_spin_valueChanged(int arg1);
 
-    void on_upper_speed_spin_valueChanged(int arg1);
-
-    void on_upper_pos_spin_valueChanged(int arg1);
-
-    void on_upper_diameter_spin_valueChanged(int arg1);
+    void on_upper_diameter_spin_valueChanged(double arg1);
 
     //void on_lower_enable_clicked(bool checked);
 
@@ -59,6 +55,16 @@ private slots:
 
     void on_upper_speed_spin_editingFinished();
 
+    void on_RUN_clicked();
+
+
+
+    void on_lower_diameter_spin_valueChanged(double arg1);
+
+
+
+    void on_jog_speed_spin_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
      QSerialPort *serial;
@@ -69,6 +75,8 @@ private:
     QLabel *motor1status;
     QLabel *motor2status;
     QTimer *timer;
+
+    bool E_STOPPED;
 
 };
 
