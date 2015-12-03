@@ -43,7 +43,7 @@ class Motor
         void Lock(void);
         void Free(void);
         bool Locked;
-        double  m_motorspeed;
+        int  m_motorspeed;
         double m_mmpsspeed;
         void Run(double pos);
         void Run(long int length, int acceleration, int speed, int direction);

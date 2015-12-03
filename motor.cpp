@@ -92,16 +92,16 @@ void Motor::SetSpeed(double Speed)
 
     double K = (50000/60);
     m_mmpsspeed = Speed;
-    m_motorspeed = K * (Speed/m_circumference);
-    int pps = (int) round (m_motorspeed);
+    double tmp = K * (Speed/m_circumference);
+    m_motorspeed = (int) round (tmp);
     stringstream cmd;
     cmd.str("");
     cmd.clear();
     TALK_TO_MOTOR(cmd);
 
-    cmd << "S=" << pps << CRLF;
+    cmd << "S=" << m_motorspeed << CRLF;
     SendCommand(cmd);
-    //qDebug() << "S=" << pps << CRLF;
+    qDebug() << "Motor " << MotorID << ", Speed = " << m_motorspeed << CRLF;
 
     STOP_TALKING_TO_MOTOR(cmd);
     //qDebug()<<"----";

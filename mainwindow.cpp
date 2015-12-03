@@ -265,3 +265,14 @@ void MainWindow::on_jog_speed_spin_valueChanged(double arg1)
 {
     upper.SetSpeed(upper.GetSpeed()+ arg1);
 }
+
+void MainWindow::on_jog_speed_save_clicked()
+{
+    saved_speed = (upper.GetSpeed()+ ui->jog_speed_spin->value());
+}
+
+void MainWindow::on_jog_speed_restore_clicked()
+{
+    upper.SetSpeed(saved_speed);
+    ui->upper_speed_spin->setValue(saved_speed);
+}
