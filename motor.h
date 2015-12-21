@@ -9,46 +9,45 @@ class Motor
     {
     public:
         Motor();
-        //Motor(QSerialPort *port, uint16_t ID);
-        //Motor( int portnum, char ID);
         virtual ~Motor(void);
-        void SetAcceleration(int Acceleration);
-        void SetHighResolution();
-        void EmergencyStop(void);
-        void Resume(void);
-        void SetSpeed(double Speed);
-        void SetDirection(bool Clockwise);
+        int MotorID;
+
+        bool SetAcceleration(int Acceleration);
+        bool SetHighResolution();
+        bool EmergencyStop(void);
+        bool Resume(void);
+        bool SetSpeed(double Speed);
+        bool SetDirection(bool Clockwise);
+        bool SetZero();
+        bool SetPosition(double);
+        bool Init(QSerialPort *port, uint16_t ID);
+        bool TALK_TO_MOTOR(std::stringstream& cmd);
+        bool STOP_TALKING_TO_MOTOR(std::stringstream& cmd);
+        bool Run(double pos);
+        bool Run(long int length, int acceleration, int speed, int direction);
+        bool Lock(void);
+        bool Free(void);
+
         double GetSpeed(void);
-        void   SetPosition(double);
-        void Init(QSerialPort *port, uint16_t ID);
         double GetPosition();
+
         void SetDiameter(double);
         void SetCircumference(double);
-        void SetZero();
+
         void delay( int millisecondsToWait );
         QByteArray ReadData(void);
         QByteArray SendCommand(std::stringstream& cmd);
 
     public:
-        int MotorID;
+
         QSerialPort *m_pPort;
         double m_diameter;
         double m_circumference;
         bool TX_LOCKOUT;
-        void TALK_TO_MOTOR(std::stringstream& cmd);
-        void STOP_TALKING_TO_MOTOR(std::stringstream& cmd);
-    protected:
-
-    public:
-        void Lock(void);
-        void Free(void);
         bool Locked;
         int  m_motorspeed;
         double m_mmpsspeed;
-        void Run(double pos);
-        void Run(long int length, int acceleration, int speed, int direction);
         std::ofstream logfile;
-
         unsigned int SpoolDiameter;
 
     };

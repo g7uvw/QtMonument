@@ -24,8 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // two motors
 
-    Motor lower();
-    Motor upper();
+    Motor lower;
+    Motor upper;
 
     serialstatus = new QLabel(this);
     motor1status = new QLabel(this);
