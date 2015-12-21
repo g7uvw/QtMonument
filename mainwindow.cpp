@@ -80,7 +80,7 @@ void MainWindow::on_actionConnect_to_motors_triggered()
         lower.SetDiameter(ui->lower_diameter_spin->value());
         upper.SetDiameter(ui->upper_diameter_spin->value());
 
-       timer->start(500);
+       timer->start(1000);
 
 }
 
@@ -172,7 +172,7 @@ void MainWindow::on_lower_enable_toggled(bool checked)
     else
     {
         lower.Free();
-         motor1status->setText("Motor 1 - Free");
+        motor1status->setText("Motor 1 - Free");
     }
 }
 
@@ -192,7 +192,7 @@ void MainWindow::on_upper_enable_toggled(bool checked)
     else
     {
         upper.Free();
-         motor2status->setText("Motor 2 - Free");
+        motor2status->setText("Motor 2 - Free");
     }
 }
 
@@ -220,7 +220,9 @@ void MainWindow::on_upper_diameter_spin_valueChanged(double arg1)
 void MainWindow::on_Lower_Pos_Zero_clicked()
 {
    ui->lower_pos_spin->setValue(0);
+   ui->upper_pos_spin->setValue(0);
    lower.SetZero();
+   upper.SetZero();
 }
 
 void MainWindow::on_EMERGENCY_STOP_clicked()
@@ -248,8 +250,8 @@ void MainWindow::on_upper_speed_spin_editingFinished()
 
 void MainWindow::on_RUN_clicked()
 {
-    upper.Lock();
-    lower.Lock();
+   // upper.Lock();
+   // lower.Lock();
     lower.Run(ui->lower_pos_spin->value());
     upper.Run(ui->lower_pos_spin->value());
 }
@@ -275,4 +277,23 @@ void MainWindow::on_jog_speed_restore_clicked()
 {
     upper.SetSpeed(saved_speed);
     ui->upper_speed_spin->setValue(saved_speed);
+    ui->jog_speed_spin->setValue(0.0);
+}
+
+void MainWindow::on_jog_pos_spin_valueChanged(double arg1)
+{
+    upper.SetPosition(ui->lower_pos_spin->value() + arg1);
+    lower.SetPosition(ui->lower_pos_spin->value() + arg1);
+    lower.Run(ui->lower_pos_spin->value() + arg1);
+    upper.Run(ui->lower_pos_spin->value() + arg1);
+}
+
+void MainWindow::on_jog_pos_save_clicked()
+{
+    saved_pos = ui->lower_pos_spin->value();
+}
+
+void MainWindow::on_jog_pos_restore_clicked()
+{
+    ui->lower_pos_spin->setValue(saved_pos);
 }

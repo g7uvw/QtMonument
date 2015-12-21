@@ -69,6 +69,12 @@ private slots:
 
     void on_jog_speed_restore_clicked();
 
+    void on_jog_pos_spin_valueChanged(double arg1);
+
+    void on_jog_pos_save_clicked();
+
+    void on_jog_pos_restore_clicked();
+
 private:
     Ui::MainWindow *ui;
      QSerialPort *serial;
