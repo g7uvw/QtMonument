@@ -172,13 +172,26 @@ void MainWindow::on_lower_enable_toggled(bool checked)
 
     if (checked)
     {
-        lower.Lock();
-        motor1status->setText("Motor 1 - Enabled");
+        if (!lower.Lock())
+           {
+            QMessageBox::critical(this, tr("Error Locking Motor 1"), tr("Error Locking Motor 1, try again") );
+        }
+        else
+        {
+            motor1status->setText("Motor 1 - Enabled");
+        }
+
     }
     else
     {
-        lower.Free();
+        if (!lower.Free())
+        {
+            QMessageBox::critical(this, tr("Error Freeing Motor 1"), tr("Error Freeing Motor 1, try again") );
+        }
+        else
+        {
          motor1status->setText("Motor 1 - Free");
+        }
     }
 }
 
@@ -192,13 +205,25 @@ void MainWindow::on_upper_enable_toggled(bool checked)
 
     if (checked)
     {
-        upper.Lock();
-        motor2status->setText("Motor 2 - Enabled");
+        if (!upper.Lock())
+        {
+            QMessageBox::critical(this, tr("Error Locking Motor 2"), tr("Error Locking Motor 2, try again") );
+        }
+        else
+        {
+            motor2status->setText("Motor 2 - Enabled");
+        }
     }
     else
     {
-        upper.Free();
-         motor2status->setText("Motor 2 - Free");
+        if (!upper.Free())
+        {
+            QMessageBox::critical(this, tr("Error Freeing Motor 2"), tr("Error Freeing Motor 2, try again") );
+        }
+        else
+        {
+            motor2status->setText("Motor 2 - Free");
+        }
     }
 }
 
