@@ -279,8 +279,6 @@ void MainWindow::on_upper_speed_spin_editingFinished()
 
 void MainWindow::on_RUN_clicked()
 {
-    upper.Lock();
-    lower.Lock();
     lower.Run(ui->lower_pos_spin->value());
     upper.Run(ui->lower_pos_spin->value());
 }
