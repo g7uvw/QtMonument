@@ -13,20 +13,42 @@ using namespace std;
 
 bool Motor::TALK_TO_MOTOR(stringstream& cmd)
 {
+    QByteArray line;
     cmd.clear();
     cmd << "{" << MotorID << CRLF;
-    return SendCommand(cmd);
-    cmd.str("");
-    cmd.clear();
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+        cmd.str("");
+        cmd.clear();
+        return true;
+    }
+    else
+    {
+        cmd.str("");
+        cmd.clear();
+        return false;
+    }
 }
 
 bool Motor::STOP_TALKING_TO_MOTOR( stringstream& cmd)
 {
+    QByteArray line;
     cmd.clear();
     cmd << "{0" << CRLF;
-    SendCommand(cmd);
-    cmd.str("");
-    cmd.clear();
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+        cmd.str("");
+        cmd.clear();
+        return true;
+    }
+    else
+    {
+        cmd.str("");
+        cmd.clear();
+        return false;
+    }
 }
 
 
@@ -47,33 +69,64 @@ bool Motor::Init(QSerialPort *port, uint16_t ID)
 {
     m_pPort = port;
     MotorID = ID;
-    SetHighResolution();
+    return SetHighResolution();
 }
 
 bool Motor::SetHighResolution()
 {
     TX_LOCKOUT = true;
+    QByteArray line;
     stringstream cmd;
     cmd.str("");
     cmd.clear();
     TALK_TO_MOTOR(cmd);
     cmd << "K37=10" << CRLF; // Resolution = 50,000 PPR, Speed Unit = 10
-    SendCommand(cmd);
-    STOP_TALKING_TO_MOTOR(cmd);
-    TX_LOCKOUT = false;
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+        if (!STOP_TALKING_TO_MOTOR(cmd))
+        {
+            TX_LOCKOUT = false;
+            return false;
+        }
+        TX_LOCKOUT = false;
+        return true;
+    }
+    else
+    {
+        STOP_TALKING_TO_MOTOR(cmd);
+        TX_LOCKOUT = false;
+        return false;
+    }
+
 }
 
 bool Motor::SetAcceleration(int Acceleration)
 {
     TX_LOCKOUT = true;
+    QByteArray line;
     stringstream cmd;
     cmd.str("");
     cmd.clear();
     TALK_TO_MOTOR(cmd);
     cmd << "A=" << Acceleration << CRLF;
-    SendCommand(cmd);
-    STOP_TALKING_TO_MOTOR(cmd);
-    TX_LOCKOUT = false;
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+        if (!STOP_TALKING_TO_MOTOR(cmd))
+        {
+            TX_LOCKOUT = false;
+            return false;
+        }
+        TX_LOCKOUT = false;
+        return true;
+    }
+    else
+    {
+        STOP_TALKING_TO_MOTOR(cmd);
+        TX_LOCKOUT = false;
+        return false;
+    }
 }
 
 
@@ -88,6 +141,7 @@ bool Motor::SetSpeed(double Speed)
     // Speed in pulses, for the motor is (K/(Speed/C))
 
     TX_LOCKOUT = true;
+    QByteArray line;
     double K = (50000/60);
     m_mmpsspeed = Speed;
     double tmp = K * (Speed/m_circumference);
@@ -98,12 +152,24 @@ bool Motor::SetSpeed(double Speed)
     TALK_TO_MOTOR(cmd);
 
     cmd << "S=" << m_motorspeed << CRLF;
-    SendCommand(cmd);
     qDebug() << "Motor " << MotorID << ", Speed = " << m_motorspeed << CRLF;
-
-    STOP_TALKING_TO_MOTOR(cmd);
-    //qDebug()<<"----";
-    TX_LOCKOUT = false;
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+        if (!STOP_TALKING_TO_MOTOR(cmd))
+        {
+            TX_LOCKOUT = false;
+            return false;
+        }
+        TX_LOCKOUT = false;
+        return true;
+    }
+    else
+    {
+        STOP_TALKING_TO_MOTOR(cmd);
+        TX_LOCKOUT = false;
+        return false;
+    }
 }
 
 double Motor::GetSpeed(void)
@@ -116,107 +182,119 @@ double Motor::GetSpeed(void)
 bool Motor::EmergencyStop(void)
 {
     TX_LOCKOUT = true;
+    QByteArray line;
     stringstream cmd;
 
     TALK_TO_MOTOR(cmd);
 
     cmd << "]" << CRLF;
-    SendCommand(cmd);
-
-    STOP_TALKING_TO_MOTOR(cmd);
-
-    TX_LOCKOUT = false;
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+        if (!STOP_TALKING_TO_MOTOR(cmd))
+        {
+            TX_LOCKOUT = false;
+            return false;
+        }
+        TX_LOCKOUT = false;
+        return true;
+    }
+    else
+    {
+        STOP_TALKING_TO_MOTOR(cmd);
+        TX_LOCKOUT = false;
+        return false;
+    }
 }
 
 bool Motor::Resume(void)
 {
     TX_LOCKOUT = true;
+    QByteArray line;
     stringstream cmd;
 
     TALK_TO_MOTOR(cmd);
 
     cmd << "^" << CRLF;
-    SendCommand(cmd);
-
-    STOP_TALKING_TO_MOTOR(cmd);
-
-    TX_LOCKOUT = false;
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+        if (!STOP_TALKING_TO_MOTOR(cmd))
+        {
+            TX_LOCKOUT = false;
+            return false;
+        }
+        TX_LOCKOUT = false;
+        return true;
+    }
+    else
+    {
+        STOP_TALKING_TO_MOTOR(cmd);
+        TX_LOCKOUT = false;
+        return false;
+    }
 }
 
 bool Motor::Lock(void)
 {
     TX_LOCKOUT = true;
+    QByteArray line;
     stringstream cmd;
     TALK_TO_MOTOR(cmd);
 
     cmd << "(" << CRLF;
-    SendCommand(cmd);
-    qDebug() << cmd.str().c_str();
-
-    STOP_TALKING_TO_MOTOR(cmd);
-
-    Locked = true;
-    TX_LOCKOUT = false;
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+        if (!STOP_TALKING_TO_MOTOR(cmd))
+        {
+            TX_LOCKOUT = false;
+            return false;
+        }
+        TX_LOCKOUT = false;
+        return true;
+    }
+    else
+    {
+        STOP_TALKING_TO_MOTOR(cmd);
+        TX_LOCKOUT = false;
+        return false;
+    }
 }
 
 bool Motor::Free(void)
 {
     TX_LOCKOUT = true;
+    QByteArray line;
     stringstream cmd;
     TALK_TO_MOTOR(cmd);
 
     cmd << ")" << CRLF;
-    SendCommand(cmd);
-    qDebug() << cmd.str().c_str();
-
-    STOP_TALKING_TO_MOTOR(cmd);
-
-    Locked = false;
-    TX_LOCKOUT = false;
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+        if (!STOP_TALKING_TO_MOTOR(cmd))
+        {
+            TX_LOCKOUT = false;
+            return false;
+        }
+        TX_LOCKOUT = false;
+        return true;
+    }
+    else
+    {
+        STOP_TALKING_TO_MOTOR(cmd);
+        TX_LOCKOUT = false;
+        return false;
+    }
 }
 
-bool Motor::Run(long int length, int acceleration, int speed, int direction)
-{
-    TX_LOCKOUT = true;
-    //length is in pulse counts. In 1:1 encoder mode, 50k pulses is one revolution.
 
-    stringstream cmd;
-
-    TALK_TO_MOTOR(cmd);
-
-    double runspeed = speed / 10.0;
-    //speed /=10;	//fix speed issue. Even with correct settinsg we're still 10x too fast.
-
-    //stop the motor
-    //cmd << "]." << MotorID << CRLF;
-    //m_pPort->write(cmd.str().c_str(),cmd.str().length());
-
-    //tell the motor the current position is 0
-    //all moves are relative from here
-    cmd << "|2" << CRLF;
-
-    //set speed and acceleration
-    cmd << "A=" << acceleration << CRLF;
-
-    cmd << "S=" << runspeed << CRLF;
-
-    //set target position
-    cmd << "P=" << direction*length << CRLF;
-
-    //go
-    cmd << "^" << CRLF;
-
-    //send commnds to motor
-    m_pPort->write(cmd.str().c_str(),cmd.str().length());
-
-    //log comands to file
-    logfile << cmd.str() <<endl;
-    TX_LOCKOUT = false;
-}
 
 bool Motor::Run(double pos)
 {
      TX_LOCKOUT = true;
+     QByteArray line;
      stringstream cmd;
 
      double posfrac = pos/m_circumference;   // what fraction of circumfrence are we moving?
@@ -231,9 +309,23 @@ bool Motor::Run(double pos)
      cmd<<"P="<<tmp<<CRLF;
      cmd<<"^"<<CRLF;
      qDebug() << cmd.str().c_str();
-     SendCommand(cmd);
-     STOP_TALKING_TO_MOTOR(cmd);
-     TX_LOCKOUT = false;
+     line = SendCommand(cmd);
+     if (!line.isEmpty())
+     {
+         if (!STOP_TALKING_TO_MOTOR(cmd))
+         {
+             TX_LOCKOUT = false;
+             return false;
+         }
+         TX_LOCKOUT = false;
+         return true;
+     }
+     else
+     {
+         STOP_TALKING_TO_MOTOR(cmd);
+         TX_LOCKOUT = false;
+         return false;
+     }
 }
 
 double Motor::GetPosition()
@@ -296,6 +388,7 @@ double Motor::GetPosition()
 bool Motor::SetPosition(double pos)
 {
     TX_LOCKOUT = true;
+    QByteArray line;
     qDebug()<<"----";
     qDebug()<<"SetSposition";
 
@@ -313,19 +406,23 @@ bool Motor::SetPosition(double pos)
     cmd<<"P="<<tmp<<CRLF;
 
     qDebug() << cmd.str().c_str();
-    SendCommand(cmd);
-
-// TODO FIX UP CHECKING RETUR STTAUS OF SENDCOMMAND AND RETURN FALSE IF ERROR
-    //    for (int tries=0; tries<5; tries++)
-    //    {
-    //        if (!SendCommand(cmd))
-    //            goto ok;
-    //    }
-    //    return false;
-
-    //ok:
-    STOP_TALKING_TO_MOTOR(cmd);
-    TX_LOCKOUT = false;
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+        if (!STOP_TALKING_TO_MOTOR(cmd))
+        {
+            TX_LOCKOUT = false;
+            return false;
+        }
+        TX_LOCKOUT = false;
+        return true;
+    }
+    else
+    {
+        STOP_TALKING_TO_MOTOR(cmd);
+        TX_LOCKOUT = false;
+        return false;
+    }
 }
 
 void Motor::SetDiameter(double tmp)
@@ -342,14 +439,29 @@ void Motor::SetCircumference(double tmp)
 bool Motor::SetZero()
 {
     TX_LOCKOUT = true;
+    QByteArray line;
     stringstream cmd;
     cmd.str("");
     cmd.clear();
     TALK_TO_MOTOR(cmd);
     cmd << "|2" << CRLF;
-    SendCommand(cmd);
-    STOP_TALKING_TO_MOTOR(cmd);
-    TX_LOCKOUT = false;
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+        if (!STOP_TALKING_TO_MOTOR(cmd))
+        {
+            TX_LOCKOUT = false;
+            return false;
+        }
+        TX_LOCKOUT = false;
+        return true;
+    }
+    else
+    {
+        STOP_TALKING_TO_MOTOR(cmd);
+        TX_LOCKOUT = false;
+        return false;
+    }
 }
 
 void Motor::delay( int millisecondsToWait )
@@ -366,7 +478,7 @@ QByteArray Motor::ReadData()
     if (m_pPort->canReadLine())
         return m_pPort->readLine();
     else
-        return 0;
+        return QByteArray();
 }
 
 QByteArray Motor::SendCommand(stringstream& cmd)
@@ -380,5 +492,5 @@ QByteArray Motor::SendCommand(stringstream& cmd)
         return  m_pPort->readLine();
     }
     else
-        return 0;
+        return QByteArray();
 }

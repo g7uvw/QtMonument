@@ -24,7 +24,6 @@ class Motor
         bool TALK_TO_MOTOR(std::stringstream& cmd);
         bool STOP_TALKING_TO_MOTOR(std::stringstream& cmd);
         bool Run(double pos);
-        bool Run(long int length, int acceleration, int speed, int direction);
         bool Lock(void);
         bool Free(void);
 
