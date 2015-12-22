@@ -66,21 +66,27 @@ void MainWindow::GetPositions()
 void MainWindow::on_actionConnect_to_motors_triggered()
 {
 
-        openSerialPort();
-        lower.Init(serial,1);
-        upper.Init(serial,2);
+    openSerialPort();
 
-        upper.Free();
-        lower.Free();
-        motor1status->setText("Motor 1 : Free");
-        motor2status->setText("Motor 2 : Free");
+    if(!lower.Init(serial,1))
+        QMessageBox::critical(this, tr("Error Initialising Motor 1"), tr("Error Initialising Motor 1, check power and restart software.") );
+    if (!upper.Init(serial,2))
+        QMessageBox::critical(this, tr("Error Initialising Motor 2"), tr("Error Initialising Motor 2, check power and restart software.") );
 
-        E_STOPPED = false;
+    if(!upper.Free())
+        QMessageBox::critical(this, tr("Error Freeing Motor 2"), tr("Error Freeing Motor 2, try again") );
+    if(!lower.Free())
+        QMessageBox::critical(this, tr("Error Freeing Motor 1"), tr("Error Freeing Motor 1, try again") );
 
-        lower.SetDiameter(ui->lower_diameter_spin->value());
-        upper.SetDiameter(ui->upper_diameter_spin->value());
+    motor1status->setText("Motor 1 : Free");
+    motor2status->setText("Motor 2 : Free");
 
-       timer->start(500);
+    E_STOPPED = false;
+
+    lower.SetDiameter(ui->lower_diameter_spin->value());
+    upper.SetDiameter(ui->upper_diameter_spin->value());
+
+    timer->start(500);
 
 }
 
