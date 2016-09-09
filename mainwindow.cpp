@@ -15,11 +15,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     //serial stuff
-    SerialOpen = false;
-    serial = new QSerialPort(this);
-    connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,SLOT(handleError(QSerialPort::SerialPortError)));
-    connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
-    settings = new SettingsDialog;
+    WireSerialOpen = false;
+    serial_wire = new QSerialPort(this);
+    connect(serial_wire, SIGNAL(error(QSerialPort::SerialPortError)), this,SLOT(handleError_wire(QSerialPort::SerialPortError)));
+    connect(serial_wire, SIGNAL(readyRead()), this, SLOT(readData_wire()));
+    settings_wire = new SettingsDialog;
     ui->setupUi(this);
 
     // two motors
@@ -27,14 +27,14 @@ MainWindow::MainWindow(QWidget *parent) :
     Motor lower;
     Motor upper;
 
-    serialstatus = new QLabel(this);
+    serialstatus_wire = new QLabel(this);
     motor1status = new QLabel(this);
     motor2status = new QLabel(this);
 
-    ui->statusBar->addPermanentWidget(serialstatus,1);
+    ui->statusBar->addPermanentWidget(serialstatus_wire,1);
     ui->statusBar->addPermanentWidget(motor1status,1);
     ui->statusBar->addPermanentWidget(motor2status,1);
-    serialstatus->setText("Serial : Not connected");
+    serialstatus_wire->setText("Serial : Not connected");
 
     //update timer
     timer = new QTimer(this);
@@ -66,11 +66,11 @@ void MainWindow::GetPositions()
 void MainWindow::on_actionConnect_to_motors_triggered()
 {
 
-    openSerialPort();
+    openSerialPort_wire();
 
-    if(!lower.Init(serial,1))
+    if(!lower.Init(serial_wire,1))
         QMessageBox::critical(this, tr("Error Initialising Motor 1"), tr("Error Initialising Motor 1, check power and restart software.") );
-    if (!upper.Init(serial,2))
+    if (!upper.Init(serial_wire,2))
         QMessageBox::critical(this, tr("Error Initialising Motor 2"), tr("Error Initialising Motor 2, check power and restart software.") );
 
     if(!upper.Free())
@@ -90,65 +90,65 @@ void MainWindow::on_actionConnect_to_motors_triggered()
 
 }
 
-void MainWindow::openSerialPort()
+void MainWindow::openSerialPort_wire()
 {
-        if (serial->isOpen())
-                serial->close();
-            SettingsDialog::Settings p = settings->settings();
-            serial->setPortName(p.name);
-            serial->setBaudRate(19200);
-            serial->setDataBits(p.dataBits);
-            serial->setParity(p.parity);
-            serial->setStopBits(p.stopBits);
-            serial->setFlowControl(p.flowControl);
-            if (serial->open(QIODevice::ReadWrite))
+        if (serial_wire->isOpen())
+                serial_wire->close();
+            SettingsDialog::Settings p = settings_wire->settings();
+            serial_wire->setPortName(p.name);
+            serial_wire->setBaudRate(19200);
+            serial_wire->setDataBits(p.dataBits);
+            serial_wire->setParity(p.parity);
+            serial_wire->setStopBits(p.stopBits);
+            serial_wire->setFlowControl(p.flowControl);
+            if (serial_wire->open(QIODevice::ReadWrite))
             {
-                   SerialOpen = true;
-                   serialstatus->setText("Serial : Connected");
+                   WireSerialOpen = true;
+                   serialstatus_wire->setText("Serial : Connected");
                    qDebug()<<"Port open";
             }
             else
             {
-                QMessageBox::critical(this, tr("Error Connecting to the motors - try restarting everything!"), serial->errorString());
+                QMessageBox::critical(this, tr("Error Connecting to the motors - try restarting everything!"), serial_wire->errorString());
             }
 
 }
 
 void MainWindow::on_action_Exit_triggered()
 {
-    if (serial->isOpen())
-        serial->close();
+    if (serial_wire->isOpen())
+        serial_wire->close();
     qApp->exit();
 }
 
-void MainWindow::readData()
+void MainWindow::readData_wire()
 {
 
 }
 
-void MainWindow::handleError(QSerialPort::SerialPortError error)
+void MainWindow::handleError_wire(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::ResourceError) {
-            QMessageBox::critical(this, tr("Critical Error"), serial->errorString());
-            closeSerialPort();
+            QMessageBox::critical(this, tr("Critical Error"), serial_wire->errorString());
+            closeSerialPort_wire();
         }
 }
 
-void MainWindow::closeSerialPort()
+void MainWindow::closeSerialPort_wire()
 {
 
 }
 
-void MainWindow::on_actionComms_Settings_triggered()
+void MainWindow::on_actionComms_wire_Settings_triggered()
 {
-    settings->show();
+    settings_wire->show();
     // show serial settings
 
 }
 
 void MainWindow::on_lower_speed_spin_valueChanged(int arg1)
 {
-    if (!serial->isOpen())
+    if (!serial_wire->isOpen())
     {
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
@@ -164,7 +164,7 @@ void MainWindow::on_lower_speed_spin_valueChanged(int arg1)
 
 void MainWindow::on_lower_enable_toggled(bool checked)
 {
-    if (!serial->isOpen())
+    if (!serial_wire->isOpen())
     {
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
@@ -197,7 +197,7 @@ void MainWindow::on_lower_enable_toggled(bool checked)
 
 void MainWindow::on_upper_enable_toggled(bool checked)
 {
-    if (!serial->isOpen())
+    if (!serial_wire->isOpen())
     {
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
@@ -229,7 +229,7 @@ void MainWindow::on_upper_enable_toggled(bool checked)
 
 void MainWindow::on_lower_pos_spin_valueChanged(int arg1)
 {
-    if (!serial->isOpen())
+    if (!serial_wire->isOpen())
     {
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
