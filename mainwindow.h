@@ -20,21 +20,42 @@ public:
     ~MainWindow();
 
     bool WireSerialOpen;
+    bool RotationSerialOpen;
 
 
 public slots:
-    void readData();
-    void handleError_wire(QSerialPort::SerialPortError error);
+    //wires
     void openSerialPort_wire();
     void closeSerialPort_wire();
-    void GetPositions();
+    void readData_wire();
+    void handleError_wire(QSerialPort::SerialPortError error);
+    void GetPositions_wire();
+
+    //rotation
+    void openSerialPort_rotation();
+    void closeSerialPort_rotation();
+    void readData_Rotation();
+    void handleError_rotation(QSerialPort::SerialPortError error);
+
+    //common
+
+
 
 private slots:
+
+    //wires
+     void on_actionComms_wire_Settings_triggered();
+
+     //rotation
+
+
+    //common
+
     void on_actionConnect_to_motors_triggered();
     void on_action_Exit_triggered();
 
 
-    void on_actionComms_Settings_triggered();
+
 
     void on_lower_speed_spin_valueChanged(int arg1);
 
@@ -76,7 +97,7 @@ private:
      SettingsDialog *settings_wire;
     Motor upper;
     Motor lower;
-    QLabel *serialstatus;
+    QLabel *serialstatus_wire;
     QLabel *motor1status;
     QLabel *motor2status;
     QTimer *timer;

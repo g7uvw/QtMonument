@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //update timer
     timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(GetPositions()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(GetPositions_wire()));
 
 }
 
@@ -47,7 +47,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::GetPositions()
+void MainWindow::GetPositions_wire()
 {
     qApp->processEvents();
     //qDebug()<<lower.GetPosition();

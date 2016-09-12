@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1054</width>
-    <height>362</height>
+    <width>1293</width>
+    <height>365</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -533,6 +533,99 @@
       </layout>
      </widget>
     </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_4">
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="title">
+       <string>Rotation</string>
+      </property>
+      <widget class="QWidget" name="horizontalLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>30</y>
+         <width>160</width>
+         <height>80</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_11">
+        <item>
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Speed</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="Rotation_speed_spin">
+          <property name="suffix">
+           <string>°/s</string>
+          </property>
+          <property name="singleStep">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="horizontalLayoutWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>120</y>
+         <width>160</width>
+         <height>80</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_12">
+        <item>
+         <widget class="QLabel" name="label_12">
+          <property name="text">
+           <string>Position</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="Rotation_pos_spin">
+          <property name="suffix">
+           <string>°</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QPushButton" name="pushButton">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>220</y>
+         <width>131</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Activate</string>
+       </property>
+      </widget>
+      <widget class="Line" name="line_4">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>200</y>
+         <width>191</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -540,7 +633,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1054</width>
+     <width>1293</width>
      <height>21</height>
     </rect>
    </property>
@@ -557,6 +650,8 @@
     <addaction name="actionComms_Settings"/>
     <addaction name="actionConnect_to_motors"/>
     <addaction name="separator"/>
+    <addaction name="actionRotation_Comms_Settings"/>
+    <addaction name="actionConnect_to_Motor"/>
    </widget>
    <addaction name="menuExit"/>
    <addaction name="menuConnect"/>
@@ -576,7 +671,7 @@
   </widget>
   <action name="actionConnect_to_motors">
    <property name="text">
-    <string>Connect to motors</string>
+    <string>Connect to Motors</string>
    </property>
   </action>
   <action name="action_Exit">
@@ -586,7 +681,17 @@
   </action>
   <action name="actionComms_Settings">
    <property name="text">
-    <string>Comms Settings</string>
+    <string>Wire Comms Settings</string>
+   </property>
+  </action>
+  <action name="actionRotation_Comms_Settings">
+   <property name="text">
+    <string>Rotation Comms Settings</string>
+   </property>
+  </action>
+  <action name="actionConnect_to_Motor">
+   <property name="text">
+    <string>Connect to Motor</string>
    </property>
   </action>
  </widget>
