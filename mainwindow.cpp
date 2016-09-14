@@ -305,3 +305,26 @@ void MainWindow::on_jog_speed_restore_clicked()
     upper.SetSpeed(saved_speed);
     ui->upper_speed_spin->setValue(saved_speed);
 }
+
+
+// new functions move to good places
+
+void MainWindow::openSerialPort_rotation()
+{
+}
+
+void MainWindow::closeSerialPort_rotation()
+{
+
+}
+
+void MainWindow::readData_Rotation()
+{
+
+}
+
+
+void MainWindow::handleError_rotation(QSerialPort::SerialPortError error)
+{
+
+}
