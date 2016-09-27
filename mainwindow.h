@@ -91,12 +91,19 @@ private slots:
 
     void on_jog_speed_restore_clicked();
 
+    void on_actionComms_Settings_triggered();
+
+    void on_actionRotation_Comms_Settings_triggered();
+
+    void on_actionConnect_to_Rotation_Stage_triggered();
+
 private:
     Ui::MainWindow *ui;
-     QSerialPort *serial_wire;
-     SettingsDialog *settings_wire;
+     QSerialPort *serial_wire, *serial_rotation;
+     SettingsDialog *settings_wire, *settings_rotation;
     Motor upper;
     Motor lower;
+    Motor rotation;
     QLabel *serialstatus_wire;
     QLabel *motor1status;
     QLabel *motor2status;

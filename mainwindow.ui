@@ -651,7 +651,7 @@
     <addaction name="actionConnect_to_motors"/>
     <addaction name="separator"/>
     <addaction name="actionRotation_Comms_Settings"/>
-    <addaction name="actionConnect_to_Motor"/>
+    <addaction name="actionConnect_to_Rotation_Stage"/>
    </widget>
    <addaction name="menuExit"/>
    <addaction name="menuConnect"/>
@@ -671,7 +671,7 @@
   </widget>
   <action name="actionConnect_to_motors">
    <property name="text">
-    <string>Connect to Motors</string>
+    <string>Connect to Wire Motors</string>
    </property>
   </action>
   <action name="action_Exit">
@@ -689,9 +689,9 @@
     <string>Rotation Comms Settings</string>
    </property>
   </action>
-  <action name="actionConnect_to_Motor">
+  <action name="actionConnect_to_Rotation_Stage">
    <property name="text">
-    <string>Connect to Motor</string>
+    <string>Connect to Rotation stage</string>
    </property>
   </action>
  </widget>

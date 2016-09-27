@@ -15,17 +15,24 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     //serial stuff
-    WireSerialOpen = false;
+    WireSerialOpen, RotationSerialOpen = false;
     serial_wire = new QSerialPort(this);
+    serial_rotation = new QSerialPort(this);
     connect(serial_wire, SIGNAL(error(QSerialPort::SerialPortError)), this,SLOT(handleError_wire(QSerialPort::SerialPortError)));
     connect(serial_wire, SIGNAL(readyRead()), this, SLOT(readData_wire()));
+
+    connect( serial_rotation, SIGNAL(error(QSerialPort::SerialPortError)), this,SLOT(handleError_rotation(QSerialPort::SerialPortError)));
+    connect( serial_rotation, SIGNAL(readyRead()), this, SLOT(readData_rotation()));
+
     settings_wire = new SettingsDialog;
+    settings_rotation = new SettingsDialog;
     ui->setupUi(this);
 
-    // two motors
+    // three motors
 
     Motor lower;
     Motor upper;
+    Motor Rotation;
 
     serialstatus_wire = new QLabel(this);
     motor1status = new QLabel(this);
@@ -114,6 +121,29 @@ void MainWindow::openSerialPort_wire()
 
 }
 
+void MainWindow::openSerialPort_rotation()
+{
+    if (serial_rotation->isOpen())
+            serial_rotation->close();
+        SettingsDialog::Settings q = settings_rotation->settings();
+        serial_rotation->setPortName(q.name);
+        serial_rotation->setBaudRate(19200);
+        serial_rotation->setDataBits(q.dataBits);
+        serial_rotation->setParity(q.parity);
+        serial_rotation->setStopBits(q.stopBits);
+        serial_rotation->setFlowControl(q.flowControl);
+        if (serial_rotation->open(QIODevice::ReadWrite))
+        {
+            RotationSerialOpen = true;
+               qDebug()<<"Rotation Port open";
+        }
+        else
+        {
+            QMessageBox::critical(this, tr("Error Connecting to the rotation stage - try restarting everything!"), serial_rotation->errorString());
+        }
+}
+
+
 void MainWindow::on_action_Exit_triggered()
 {
     if (serial_wire->isOpen())
@@ -134,6 +164,15 @@ void MainWindow::handleError_wire(QSerialPort::SerialPortError error)
         }
 }
 
+void MainWindow::handleError_rotation(QSerialPort::SerialPortError error)
+{
+    if (error == QSerialPort::ResourceError) {
+            QMessageBox::critical(this, tr("Critical Error"), serial_rotation->errorString());
+            closeSerialPort_rotation();
+        }
+}
+
+
 void MainWindow::closeSerialPort_wire()
 {
 
@@ -145,6 +184,8 @@ void MainWindow::on_actionComms_wire_Settings_triggered()
     // show serial settings
 
 }
+
+
 
 void MainWindow::on_lower_speed_spin_valueChanged(int arg1)
 {
@@ -307,11 +348,9 @@ void MainWindow::on_jog_speed_restore_clicked()
 }
 
 
-// new functions move to good places
 
-void MainWindow::openSerialPort_rotation()
-{
-}
+
+
 
 void MainWindow::closeSerialPort_rotation()
 {
@@ -324,7 +363,23 @@ void MainWindow::readData_Rotation()
 }
 
 
-void MainWindow::handleError_rotation(QSerialPort::SerialPortError error)
+
+
+void MainWindow::on_actionComms_Settings_triggered()
 {
+     settings_wire->show();
+}
+
+void MainWindow::on_actionRotation_Comms_Settings_triggered()
+{
+    settings_rotation->show();
+}
+
+void MainWindow::on_actionConnect_to_Rotation_Stage_triggered()
+{
+    openSerialPort_rotation();
+
+    if(!rotation.Init(serial_rotation,1))
+        QMessageBox::critical(this, tr("Error Initialising Motor 1"), tr("Error Initialising Motor 1, check power and restart software.") );
 
 }
