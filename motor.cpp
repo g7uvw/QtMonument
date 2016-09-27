@@ -11,45 +11,46 @@ using namespace std;
 #define CRLF "\x0D\x0A"
 
 
-bool Motor::TALK_TO_MOTOR(stringstream& cmd)
-{
-    QByteArray line;
-    cmd.clear();
-    cmd << "{" << MotorID << CRLF;
-    line = SendCommand(cmd);
-    if (!line.isEmpty())
-    {
-        cmd.str("");
-        cmd.clear();
-        return true;
-    }
-    else
-    {
-        cmd.str("");
-        cmd.clear();
-        return false;
-    }
-}
+//bool Motor::TALK_TO_MOTOR(stringstream& cmd)
+//{
+//    QByteArray line;
+//    cmd.clear();
+//    cmd << "{" << MotorID << CRLF;
+//    line = SendCommand(cmd);
+//    if (!line.isEmpty())
+//    {
+//        cmd.str("");
+//        cmd.clear();
+//        return true;
+//    }
+//    else
+//    {
+//        cmd.str("");
+//        cmd.clear();
+//        return false;
+//    }
+//}
 
-bool Motor::STOP_TALKING_TO_MOTOR( stringstream& cmd)
-{
-    QByteArray line;
-    cmd.clear();
-    cmd << "{0" << CRLF;
-    line = SendCommand(cmd);
-    if (!line.isEmpty())
-    {
-        cmd.str("");
-        cmd.clear();
-        return true;
-    }
-    else
-    {
-        cmd.str("");
-        cmd.clear();
-        return false;
-    }
-}
+//bool Motor::STOP_TALKING_TO_MOTOR( stringstream& cmd)
+//{
+//    //try sending a blank command to kick the motor controller into life
+//    QByteArray line;
+//    cmd.clear();
+//    cmd << "" << CRLF;
+//    line = SendCommand(cmd);
+//    if (!line.isEmpty())
+//    {
+//        cmd.str("");
+//        cmd.clear();
+//        return true;
+//    }
+//    else
+//    {
+//        cmd.str("");
+//        cmd.clear();
+//        return false;
+//    }
+//}
 
 
 
@@ -79,24 +80,21 @@ bool Motor::SetHighResolution()
     stringstream cmd;
     cmd.str("");
     cmd.clear();
-    TALK_TO_MOTOR(cmd);
-    cmd << "K37=10" << CRLF; // Resolution = 50,000 PPR, Speed Unit = 10
+
+    cmd << "K37=100." << MotorID << CRLF; //Set 1:1 resolution with encoder
     line = SendCommand(cmd);
     if (!line.isEmpty())
     {
-        if (!STOP_TALKING_TO_MOTOR(cmd))
-        {
-            TX_LOCKOUT = false;
-            return false;
-        }
-        TX_LOCKOUT = false;
-        return true;
+
+      TX_LOCKOUT = false;
+      return false;
+
     }
     else
     {
-        STOP_TALKING_TO_MOTOR(cmd);
+
         TX_LOCKOUT = false;
-        return false;
+        return true;
     }
 
 }
@@ -108,24 +106,21 @@ bool Motor::SetAcceleration(int Acceleration)
     stringstream cmd;
     cmd.str("");
     cmd.clear();
-    TALK_TO_MOTOR(cmd);
-    cmd << "A=" << Acceleration << CRLF;
+
+    cmd << "A=" << Acceleration << "." << MotorID << CRLF;
     line = SendCommand(cmd);
     if (!line.isEmpty())
     {
-        if (!STOP_TALKING_TO_MOTOR(cmd))
-        {
-            TX_LOCKOUT = false;
-            return false;
-        }
-        TX_LOCKOUT = false;
-        return true;
+
+      TX_LOCKOUT = false;
+      return false;
+
     }
     else
     {
-        STOP_TALKING_TO_MOTOR(cmd);
+
         TX_LOCKOUT = false;
-        return false;
+        return true;
     }
 }
 
@@ -149,26 +144,23 @@ bool Motor::SetSpeed(double Speed)
     stringstream cmd;
     cmd.str("");
     cmd.clear();
-    TALK_TO_MOTOR(cmd);
 
-    cmd << "S=" << m_motorspeed << CRLF;
+
+    cmd << "S=" << m_motorspeed << "." << MotorID << CRLF;
     qDebug() << "Motor " << MotorID << ", Speed = " << m_motorspeed << CRLF;
     line = SendCommand(cmd);
     if (!line.isEmpty())
     {
-        if (!STOP_TALKING_TO_MOTOR(cmd))
-        {
-            TX_LOCKOUT = false;
-            return false;
-        }
-        TX_LOCKOUT = false;
-        return true;
+
+      TX_LOCKOUT = false;
+      return false;
+
     }
     else
     {
-        STOP_TALKING_TO_MOTOR(cmd);
+
         TX_LOCKOUT = false;
-        return false;
+        return true;
     }
 }
 
@@ -185,25 +177,22 @@ bool Motor::EmergencyStop(void)
     QByteArray line;
     stringstream cmd;
 
-    TALK_TO_MOTOR(cmd);
 
-    cmd << "]" << CRLF;
+
+    cmd << "]." << MotorID << CRLF;
     line = SendCommand(cmd);
     if (!line.isEmpty())
     {
-        if (!STOP_TALKING_TO_MOTOR(cmd))
-        {
-            TX_LOCKOUT = false;
-            return false;
-        }
-        TX_LOCKOUT = false;
-        return true;
+
+      TX_LOCKOUT = false;
+      return false;
+
     }
     else
     {
-        STOP_TALKING_TO_MOTOR(cmd);
+
         TX_LOCKOUT = false;
-        return false;
+        return true;
     }
 }
 
@@ -213,25 +202,22 @@ bool Motor::Resume(void)
     QByteArray line;
     stringstream cmd;
 
-    TALK_TO_MOTOR(cmd);
 
-    cmd << "^" << CRLF;
+
+    cmd << "^." << MotorID << CRLF;
     line = SendCommand(cmd);
     if (!line.isEmpty())
     {
-        if (!STOP_TALKING_TO_MOTOR(cmd))
-        {
-            TX_LOCKOUT = false;
-            return false;
-        }
-        TX_LOCKOUT = false;
-        return true;
+
+      TX_LOCKOUT = false;
+      return false;
+
     }
     else
     {
-        STOP_TALKING_TO_MOTOR(cmd);
+
         TX_LOCKOUT = false;
-        return false;
+        return true;
     }
 }
 
@@ -240,25 +226,22 @@ bool Motor::Lock(void)
     TX_LOCKOUT = true;
     QByteArray line;
     stringstream cmd;
-    TALK_TO_MOTOR(cmd);
 
-    cmd << "(" << CRLF;
+
+    cmd << "(." << MotorID << CRLF;
     line = SendCommand(cmd);
     if (!line.isEmpty())
     {
-        if (!STOP_TALKING_TO_MOTOR(cmd))
-        {
-            TX_LOCKOUT = false;
-            return false;
-        }
-        TX_LOCKOUT = false;
-        return true;
+
+      TX_LOCKOUT = false;
+      return false;
+
     }
     else
     {
-        STOP_TALKING_TO_MOTOR(cmd);
+
         TX_LOCKOUT = false;
-        return false;
+        return true;
     }
 }
 
@@ -267,25 +250,22 @@ bool Motor::Free(void)
     TX_LOCKOUT = true;
     QByteArray line;
     stringstream cmd;
-    TALK_TO_MOTOR(cmd);
 
-    cmd << ")" << CRLF;
+
+    cmd << ")." << MotorID << CRLF;
     line = SendCommand(cmd);
     if (!line.isEmpty())
     {
-        if (!STOP_TALKING_TO_MOTOR(cmd))
-        {
-            TX_LOCKOUT = false;
-            return false;
-        }
-        TX_LOCKOUT = false;
-        return true;
+
+      TX_LOCKOUT = false;
+      return false;
+
     }
     else
     {
-        STOP_TALKING_TO_MOTOR(cmd);
+
         TX_LOCKOUT = false;
-        return false;
+        return true;
     }
 }
 
@@ -303,28 +283,25 @@ bool Motor::Run(double pos)
 
      int tmp = 50000 * posfrac;
 
-     TALK_TO_MOTOR(cmd);
-     cmd<<"A=100"<<CRLF;
-     cmd<<"S="<<m_motorspeed<<CRLF;
-     cmd<<"P="<<tmp<<CRLF;
-     cmd<<"^"<<CRLF;
+
+     cmd<<"A=100" << "." << MotorID << CRLF;
+     cmd<<"S="<<m_motorspeed<< "." << MotorID << CRLF;
+     cmd<<"P="<<tmp<< "." << MotorID << CRLF;
+     cmd<<"^"<< "." << MotorID << CRLF;
      qDebug() << cmd.str().c_str();
      line = SendCommand(cmd);
      if (!line.isEmpty())
      {
-         if (!STOP_TALKING_TO_MOTOR(cmd))
-         {
-             TX_LOCKOUT = false;
-             return false;
-         }
-         TX_LOCKOUT = false;
-         return true;
+
+       TX_LOCKOUT = false;
+       return false;
+
      }
      else
      {
-         STOP_TALKING_TO_MOTOR(cmd);
+
          TX_LOCKOUT = false;
-         return false;
+         return true;
      }
 }
 
@@ -339,8 +316,8 @@ double Motor::GetPosition()
     {
         //qDebug() << "Get Position";
 
-        TALK_TO_MOTOR(cmd);
-        cmd << "?96" << CRLF;
+
+        cmd << "?96"<< "." << MotorID << CRLF;
         line =  SendCommand(cmd);
         //qDebug() << line;
         line.clear();
@@ -360,13 +337,13 @@ double Motor::GetPosition()
                 //qDebug()<< "converted to longs"  <<tpos;
                 double pos = (m_circumference * tpos) / 50000;
                 //qDebug()<<"converted to actual position" << pos;
-                STOP_TALKING_TO_MOTOR(cmd);
+                //STOP_TALKING_TO_MOTOR(cmd);
                 return pos;
             }
 
             else
             {
-                STOP_TALKING_TO_MOTOR(cmd);
+                //STOP_TALKING_TO_MOTOR(cmd);
                 return -1;
             }
 
@@ -374,7 +351,7 @@ double Motor::GetPosition()
 
         else
         {
-            STOP_TALKING_TO_MOTOR(cmd);
+            //STOP_TALKING_TO_MOTOR(cmd);
             return -1;
         }
     }
@@ -400,28 +377,25 @@ bool Motor::SetPosition(double pos)
 
     int tmp = 50000 * posfrac;
 
-    TALK_TO_MOTOR(cmd);
-    cmd<<"A=100"<<CRLF;
-    cmd<<"S="<<m_motorspeed<<CRLF;
-    cmd<<"P="<<tmp<<CRLF;
+
+    cmd<<"A=100"<< "." << MotorID << CRLF;
+    cmd<<"S="<<m_motorspeed<< "." << MotorID << CRLF;
+    cmd<<"P="<<tmp<< "." << MotorID << CRLF;
 
     qDebug() << cmd.str().c_str();
     line = SendCommand(cmd);
     if (!line.isEmpty())
     {
-        if (!STOP_TALKING_TO_MOTOR(cmd))
-        {
-            TX_LOCKOUT = false;
-            return false;
-        }
-        TX_LOCKOUT = false;
-        return true;
+
+      TX_LOCKOUT = false;
+      return false;
+
     }
     else
     {
-        STOP_TALKING_TO_MOTOR(cmd);
+
         TX_LOCKOUT = false;
-        return false;
+        return true;
     }
 }
 
@@ -443,24 +417,21 @@ bool Motor::SetZero()
     stringstream cmd;
     cmd.str("");
     cmd.clear();
-    TALK_TO_MOTOR(cmd);
-    cmd << "|2" << CRLF;
+
+    cmd << "|2" << "." << MotorID << CRLF;
     line = SendCommand(cmd);
     if (!line.isEmpty())
     {
-        if (!STOP_TALKING_TO_MOTOR(cmd))
-        {
-            TX_LOCKOUT = false;
-            return false;
-        }
-        TX_LOCKOUT = false;
-        return true;
+
+      TX_LOCKOUT = false;
+      return false;
+
     }
     else
     {
-        STOP_TALKING_TO_MOTOR(cmd);
+
         TX_LOCKOUT = false;
-        return false;
+        return true;
     }
 }
 
@@ -484,7 +455,7 @@ QByteArray Motor::ReadData()
 QByteArray Motor::SendCommand(stringstream& cmd)
 {
     m_pPort->write(cmd.str().c_str(),cmd.str().length());
-    if (m_pPort->waitForBytesWritten(5))
+    if (m_pPort->waitForBytesWritten(10))
     {
         cmd.str("");
         cmd.clear();
