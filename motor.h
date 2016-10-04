@@ -17,12 +17,14 @@ class Motor
         bool EmergencyStop(void);
         bool Resume(void);
         bool SetSpeed(double Speed);
+        bool SetSpeed(int DegreesPerSecond);
         bool SetDirection(bool Clockwise);
         bool SetZero();
         bool SetPosition(double);
+        bool SetPosition(int Degrees);
         bool Init(QSerialPort *port, uint16_t ID);
-        bool TALK_TO_MOTOR(std::stringstream& cmd);
-        bool STOP_TALKING_TO_MOTOR(std::stringstream& cmd);
+
+//        bool STOP_TALKING_TO_MOTOR(std::stringstream& cmd);
         bool Run(double pos);
         bool Lock(void);
         bool Free(void);
@@ -45,6 +47,7 @@ class Motor
         bool TX_LOCKOUT;
         bool Locked;
         int  m_motorspeed;
+        int m_motorpos;
         double m_mmpsspeed;
         std::ofstream logfile;
         unsigned int SpoolDiameter;

@@ -34,7 +34,7 @@ public slots:
     //rotation
     void openSerialPort_rotation();
     void closeSerialPort_rotation();
-    void readData_Rotation();
+    void readData_rotation();
     void handleError_rotation(QSerialPort::SerialPortError error);
 
     //common
@@ -91,11 +91,17 @@ private slots:
 
     void on_jog_speed_restore_clicked();
 
-    void on_actionComms_Settings_triggered();
-
     void on_actionRotation_Comms_Settings_triggered();
 
     void on_actionConnect_to_Rotation_Stage_triggered();
+
+    void on_Rotation_speed_spin_valueChanged(int arg1);
+
+    void on_Rotation_pos_spin_valueChanged(int arg1);
+
+    void on_pushButton_clicked(bool checked);
+
+    void on_actionComms_Settings_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -105,8 +111,10 @@ private:
     Motor lower;
     Motor rotation;
     QLabel *serialstatus_wire;
+    QLabel *serialstatus_rotation;
     QLabel *motor1status;
     QLabel *motor2status;
+    QLabel *rotationstatus;
     QTimer *timer;
 
     bool E_STOPPED;

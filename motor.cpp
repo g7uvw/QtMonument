@@ -139,7 +139,7 @@ bool Motor::SetSpeed(double Speed)
     QByteArray line;
     double K = (50000/60);
     m_mmpsspeed = Speed;
-    double tmp = K * (Speed/m_circumference);
+    double tmp = K / (Speed/m_circumference);
     m_motorspeed = (int) round (tmp);
     stringstream cmd;
     cmd.str("");
@@ -163,6 +163,40 @@ bool Motor::SetSpeed(double Speed)
         return true;
     }
 }
+
+bool Motor:: SetSpeed(int DegreesPerSecond)
+{
+    // with Resolution 50000, and speed unit 10, there are
+    // (50000/60) pulses per second
+
+    double speed = (50000.0/60.0)*((double)DegreesPerSecond/360.0);
+
+    TX_LOCKOUT = true;
+    QByteArray line;
+
+    m_motorspeed = (int) round(speed);
+    stringstream cmd;
+    cmd.str("");
+    cmd.clear();
+
+    cmd << "S=" << m_motorspeed << "." << MotorID << CRLF;
+    qDebug() << "Rotation " << MotorID << ", Speed = " << m_motorspeed << CRLF;
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+
+      TX_LOCKOUT = false;
+      return false;
+
+    }
+    else
+    {
+
+        TX_LOCKOUT = false;
+        return true;
+    }
+}
+
 
 double Motor::GetSpeed(void)
 {
@@ -398,6 +432,44 @@ bool Motor::SetPosition(double pos)
         return true;
     }
 }
+
+bool Motor::SetPosition(int Degrees)
+{
+    // 50000 pulses per revolution in this mode
+    // 360 degrees per revolution.
+    // position sent to motor is then 50,000 * position wanted / 360
+
+    m_motorpos = 50000 * (double) (Degrees/360.0);
+
+    TX_LOCKOUT = true;
+    QByteArray line;
+    qDebug()<<"----";
+    qDebug()<<"Setposition rotation";
+    stringstream cmd;
+
+    cmd<<"A=100"<< "." << MotorID << CRLF;
+    cmd<<"S="<<m_motorspeed<< "." << MotorID << CRLF;
+    cmd<<"P="<<m_motorpos<< "." << MotorID << CRLF;
+
+    qDebug() << cmd.str().c_str();
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+
+      TX_LOCKOUT = false;
+      return false;
+
+    }
+    else
+    {
+
+        TX_LOCKOUT = false;
+        return true;
+    }
+
+
+}
+
 
 void Motor::SetDiameter(double tmp)
 {

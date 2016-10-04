@@ -15,7 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     //serial stuff
-    WireSerialOpen, RotationSerialOpen = false;
+    WireSerialOpen = false;
+    RotationSerialOpen = false;
     serial_wire = new QSerialPort(this);
     serial_rotation = new QSerialPort(this);
     connect(serial_wire, SIGNAL(error(QSerialPort::SerialPortError)), this,SLOT(handleError_wire(QSerialPort::SerialPortError)));
@@ -35,13 +36,18 @@ MainWindow::MainWindow(QWidget *parent) :
     Motor Rotation;
 
     serialstatus_wire = new QLabel(this);
+    serialstatus_rotation = new QLabel(this);
     motor1status = new QLabel(this);
     motor2status = new QLabel(this);
+    rotationstatus = new QLabel(this);
 
     ui->statusBar->addPermanentWidget(serialstatus_wire,1);
     ui->statusBar->addPermanentWidget(motor1status,1);
     ui->statusBar->addPermanentWidget(motor2status,1);
-    serialstatus_wire->setText("Serial : Not connected");
+    serialstatus_wire->setText("Serial1 : Not connected");
+    ui->statusBar->addPermanentWidget(serialstatus_rotation,1);
+    ui->statusBar->addPermanentWidget(rotationstatus,1);
+    serialstatus_rotation->setText("Serial2 : Not connected");
 
     //update timer
     timer = new QTimer(this);
@@ -111,7 +117,7 @@ void MainWindow::openSerialPort_wire()
             if (serial_wire->open(QIODevice::ReadWrite))
             {
                    WireSerialOpen = true;
-                   serialstatus_wire->setText("Serial : Connected");
+                   serialstatus_wire->setText("Serial1 : Connected");
                    qDebug()<<"Port open";
             }
             else
@@ -135,6 +141,7 @@ void MainWindow::openSerialPort_rotation()
         if (serial_rotation->open(QIODevice::ReadWrite))
         {
             RotationSerialOpen = true;
+            serialstatus_rotation->setText("Serial2: Connected");
                qDebug()<<"Rotation Port open";
         }
         else
@@ -146,8 +153,8 @@ void MainWindow::openSerialPort_rotation()
 
 void MainWindow::on_action_Exit_triggered()
 {
-    if (serial_wire->isOpen())
-        serial_wire->close();
+    closeSerialPort_wire();
+    closeSerialPort_rotation();
     qApp->exit();
 }
 
@@ -175,14 +182,22 @@ void MainWindow::handleError_rotation(QSerialPort::SerialPortError error)
 
 void MainWindow::closeSerialPort_wire()
 {
-
+    if (serial_wire->isOpen())
+        serial_wire->close();
+    serialstatus_wire->setText("Serial1: Disconnected");
 }
+
+void MainWindow::closeSerialPort_rotation()
+{
+    if(serial_rotation->isOpen())
+        serial_rotation->close();
+    serialstatus_rotation->setText("Serial2: Disconnected");
+}
+
 
 void MainWindow::on_actionComms_wire_Settings_triggered()
 {
     settings_wire->show();
-    // show serial settings
-
 }
 
 
@@ -195,7 +210,7 @@ void MainWindow::on_lower_speed_spin_valueChanged(int arg1)
         return;
     }
 
-    lower.SetSpeed(arg1);
+    lower.SetSpeed((double)arg1);
     float uppertmp = arg1 * (lower.m_circumference / upper.m_circumference);
     ui->upper_speed_spin->setValue( arg1 * (lower.m_circumference / upper.m_circumference));
     upper.SetSpeed(arg1 * (lower.m_circumference / upper.m_circumference));
@@ -280,14 +295,10 @@ void MainWindow::on_lower_pos_spin_valueChanged(int arg1)
     lower.SetPosition(arg1);
 }
 
-
-
 void MainWindow::on_upper_diameter_spin_valueChanged(double arg1)
 {
     upper.SetDiameter(arg1);
 }
-
-
 
 void MainWindow::on_Lower_Pos_Zero_clicked()
 {
@@ -324,8 +335,6 @@ void MainWindow::on_RUN_clicked()
     upper.Run(ui->lower_pos_spin->value());
 }
 
-
-
 void MainWindow::on_lower_diameter_spin_valueChanged(double arg1)
 {
     lower.SetDiameter(arg1);
@@ -347,27 +356,10 @@ void MainWindow::on_jog_speed_restore_clicked()
     ui->upper_speed_spin->setValue(saved_speed);
 }
 
-
-
-
-
-
-void MainWindow::closeSerialPort_rotation()
+void MainWindow::readData_rotation()
 {
+int wibble = rotation.GetPosition();
 
-}
-
-void MainWindow::readData_Rotation()
-{
-
-}
-
-
-
-
-void MainWindow::on_actionComms_Settings_triggered()
-{
-     settings_wire->show();
 }
 
 void MainWindow::on_actionRotation_Comms_Settings_triggered()
@@ -380,6 +372,51 @@ void MainWindow::on_actionConnect_to_Rotation_Stage_triggered()
     openSerialPort_rotation();
 
     if(!rotation.Init(serial_rotation,1))
-        QMessageBox::critical(this, tr("Error Initialising Motor 1"), tr("Error Initialising Motor 1, check power and restart software.") );
+        QMessageBox::critical(this, tr("Error Initialising rotation stage"), tr("Error Initialising rotation stage, check power and restart software.") );
 
+    rotation.Free();
+}
+
+void MainWindow::on_Rotation_speed_spin_valueChanged(int arg1)
+{
+    rotation.SetSpeed(arg1);
+}
+
+void MainWindow::on_Rotation_pos_spin_valueChanged(int arg1)
+{
+    rotation.SetPosition(arg1);
+}
+
+
+
+void MainWindow::on_pushButton_clicked(bool checked)
+{
+    if (!serial_rotation->isOpen())
+    {
+        QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
+        return;
+    }
+
+    if (checked)
+    {
+        if (!rotation.Lock())
+           {
+            QMessageBox::critical(this, tr("Error Locking Turntable Motor 1"), tr("Error Locking Turntable Motor 1, try again") );
+        }
+        rotationstatus->setText("Enabled.");
+
+    }
+    else
+    {
+        if (!rotation.Free())
+        {
+            QMessageBox::critical(this, tr("Error FreeingTurntable Motor 1"), tr("Error Freeing Turntable Motor 1, try again") );
+        }
+        rotationstatus->setText("Free.");
+    }
+}
+
+void MainWindow::on_actionComms_Settings_triggered()
+{
+    settings_wire->show();
 }
