@@ -103,6 +103,8 @@ private slots:
 
     void on_actionComms_Settings_triggered();
 
+    void on_Rotation_pos_spin_editingFinished();
+
 private:
     Ui::MainWindow *ui;
      QSerialPort *serial_wire, *serial_rotation;

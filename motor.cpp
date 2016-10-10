@@ -169,7 +169,7 @@ bool Motor:: SetSpeed(int DegreesPerSecond)
     // with Resolution 50000, and speed unit 10, there are
     // (50000/60) pulses per second
 
-    double speed = (50000.0/60.0)*((double)DegreesPerSecond/360.0);
+    double speed = (50000.0/60.0)*((double)DegreesPerSecond / 360.0);
 
     TX_LOCKOUT = true;
     QByteArray line;
@@ -337,6 +337,34 @@ bool Motor::Run(double pos)
          TX_LOCKOUT = false;
          return true;
      }
+}
+
+bool Motor::Rotate()
+{
+    TX_LOCKOUT = true;
+    QByteArray line;
+    stringstream cmd;
+
+    cmd<<"A=100" << "." << MotorID << CRLF;
+    cmd<<"S="<<m_motorspeed<< "." << MotorID << CRLF;
+    cmd<<"P="<<m_motorpos<< "." << MotorID << CRLF;
+    cmd<<"^"<< "." << MotorID << CRLF;
+    qDebug() << cmd.str().c_str();
+    line = SendCommand(cmd);
+    if (!line.isEmpty())
+    {
+
+      TX_LOCKOUT = false;
+      return false;
+
+    }
+    else
+    {
+
+        TX_LOCKOUT = false;
+        return true;
+    }
+
 }
 
 double Motor::GetPosition()

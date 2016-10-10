@@ -565,6 +565,9 @@
           <property name="suffix">
            <string>°/s</string>
           </property>
+          <property name="maximum">
+           <number>360</number>
+          </property>
           <property name="singleStep">
            <number>0</number>
           </property>
@@ -577,7 +580,7 @@
         <rect>
          <x>30</x>
          <y>120</y>
-         <width>160</width>
+         <width>166</width>
          <height>80</height>
         </rect>
        </property>
@@ -594,6 +597,12 @@
           <property name="suffix">
            <string>°</string>
           </property>
+          <property name="minimum">
+           <number>-3600</number>
+          </property>
+          <property name="maximum">
+           <number>3600</number>
+          </property>
          </widget>
         </item>
        </layout>
@@ -609,6 +618,9 @@
        </property>
        <property name="text">
         <string>Activate</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
        </property>
       </widget>
       <widget class="Line" name="line_4">

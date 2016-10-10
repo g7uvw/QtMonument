@@ -26,6 +26,7 @@ class Motor
 
 //        bool STOP_TALKING_TO_MOTOR(std::stringstream& cmd);
         bool Run(double pos);
+        bool Rotate();
         bool Lock(void);
         bool Free(void);
 

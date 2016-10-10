@@ -210,7 +210,8 @@ void MainWindow::on_lower_speed_spin_valueChanged(int arg1)
         return;
     }
 
-    lower.SetSpeed((double)arg1);
+    lower.SetSpeed((double)arg1); //cast as double here so we don't hit the int handler used for rotation stage.
+    // nasty cludgy hack. Sorry future me.
     float uppertmp = arg1 * (lower.m_circumference / upper.m_circumference);
     ui->upper_speed_spin->setValue( arg1 * (lower.m_circumference / upper.m_circumference));
     upper.SetSpeed(arg1 * (lower.m_circumference / upper.m_circumference));
@@ -384,7 +385,7 @@ void MainWindow::on_Rotation_speed_spin_valueChanged(int arg1)
 
 void MainWindow::on_Rotation_pos_spin_valueChanged(int arg1)
 {
-    rotation.SetPosition(arg1);
+
 }
 
 
@@ -419,4 +420,10 @@ void MainWindow::on_pushButton_clicked(bool checked)
 void MainWindow::on_actionComms_Settings_triggered()
 {
     settings_wire->show();
+}
+
+void MainWindow::on_Rotation_pos_spin_editingFinished()
+{
+    rotation.SetPosition(ui->Rotation_pos_spin->value());
+    rotation.Rotate();
 }
