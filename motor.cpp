@@ -128,16 +128,21 @@ bool Motor::SetAcceleration(int Acceleration)
 
 bool Motor::SetSpeed(double Speed)
 {
-    // Speed passed here is in mm/s
-    // with Resolution 50000, and speed unit 10, there are
-    // (50000/60) pulses per second, call this K
-    // we know our spool circumference, call it C
-    // The speed we want is Speed.
-    // Speed in pulses, for the motor is (K/(Speed/C))
+//    60 rpm = 1 rev/sec
+//    48mm diameter roller = 150.79 mm circumference
+//    60rpm = 150mm/s
+//    60rpm = speed unit 100 and resolution 50,000 speed value = 500
+//    k37=100
+//    50,000 pulses per rev
+//    speed unit = 1
+
+//    speed = 500, = 100 sec per rev
+//    speed = 5000, = 10 sec per rev
+//    speed = 50000, = 1 sec per rev
 
     TX_LOCKOUT = true;
     QByteArray line;
-    double K = (50000/60);
+    double K = (Resolution/SpeedUnit);
     m_mmpsspeed = Speed;
     double tmp = K / (Speed/m_circumference);
     m_motorspeed = (int) round (tmp);
@@ -166,10 +171,19 @@ bool Motor::SetSpeed(double Speed)
 
 bool Motor:: SetSpeed(int DegreesPerSecond)
 {
-    // with Resolution 50000, and speed unit 10, there are
-    // (50000/60) pulses per second
+    //    60 rpm = 1 rev/sec
+    //    48mm diameter roller = 150.79 mm circumference
+    //    60rpm = 150mm/s
+    //    60rpm = speed unit 100 and resolution 50,000 speed value = 500
+    //    k37=100
+    //    50,000 pulses per rev
+    //    speed unit = 1
 
-    double speed = (50000.0/60.0)*((double)DegreesPerSecond / 360.0);
+    //    speed = 500, = 100 sec per rev
+    //    speed = 5000, = 10 sec per rev
+    //    speed = 50000, = 1 sec per rev
+
+    double speed = (Resolution/SpeedUnit)*((double)DegreesPerSecond / 360.0);
 
     TX_LOCKOUT = true;
     QByteArray line;

@@ -52,6 +52,8 @@ class Motor
         double m_mmpsspeed;
         std::ofstream logfile;
         unsigned int SpoolDiameter;
+        static const int Resolution = 50000;
+        static const int SpeedUnit = 1;
 
     };
 
