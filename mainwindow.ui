@@ -580,7 +580,7 @@
         <rect>
          <x>30</x>
          <y>120</y>
-         <width>166</width>
+         <width>177</width>
          <height>80</height>
         </rect>
        </property>
@@ -598,10 +598,10 @@
            <string>°</string>
           </property>
           <property name="minimum">
-           <number>-3600</number>
+           <number>-36000</number>
           </property>
           <property name="maximum">
-           <number>3600</number>
+           <number>36000</number>
           </property>
          </widget>
         </item>
