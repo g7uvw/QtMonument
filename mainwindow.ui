@@ -156,10 +156,10 @@
           <string> mm</string>
          </property>
          <property name="minimum">
-          <number>-60000</number>
+          <number>-6000000</number>
          </property>
          <property name="maximum">
-          <number>60000</number>
+          <number>6000000</number>
          </property>
         </widget>
        </item>

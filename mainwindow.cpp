@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusBar->addPermanentWidget(serialstatus_rotation,1);
     ui->statusBar->addPermanentWidget(rotationstatus,1);
     serialstatus_rotation->setText("Serial2 : Not connected");
-
+    qApp->processEvents();
     //update timer
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(GetPositions_wire()));
@@ -63,17 +63,19 @@ MainWindow::~MainWindow()
 void MainWindow::GetPositions_wire()
 {
     qApp->processEvents();
-    //qDebug()<<lower.GetPosition();
-    int lp = lower.GetPosition();
-    int up = upper.GetPosition();
-    if (lp != -1)
+    if (WireSerialOpen)
     {
-        ui->lower_distance->setValue(lp);
+         lp = lower.GetPosition();
+         up = upper.GetPosition();
+         //qDebug()<<lp;
+         if(lp !=0)
+         {
+            ui->lower_distance->setValue(lp+0.01);
+            ui->upper_distance->setValue(up+0.01);
+         }
     }
-    if (up != -1)
-    {
-        ui->upper_distance->setValue(up);
-    }
+
+qApp->processEvents();
 }
 
 void MainWindow::on_actionConnect_to_motors_triggered()
@@ -81,9 +83,9 @@ void MainWindow::on_actionConnect_to_motors_triggered()
 
     openSerialPort_wire();
 
-    if(!lower.Init(serial_wire,1))
+    if(!lower.Init(serial_wire, 1))
         QMessageBox::critical(this, tr("Error Initialising Motor 1"), tr("Error Initialising Motor 1, check power and restart software.") );
-    if (!upper.Init(serial_wire,2))
+    if (!upper.Init(serial_wire, 2))
         QMessageBox::critical(this, tr("Error Initialising Motor 2"), tr("Error Initialising Motor 2, check power and restart software.") );
 
     if(!upper.Free())
@@ -99,7 +101,7 @@ void MainWindow::on_actionConnect_to_motors_triggered()
     lower.SetDiameter(ui->lower_diameter_spin->value());
     upper.SetDiameter(ui->upper_diameter_spin->value());
 
-    timer->start(500);
+    timer->start(10);
 
 }
 
@@ -109,7 +111,7 @@ void MainWindow::openSerialPort_wire()
                 serial_wire->close();
             SettingsDialog::Settings p = settings_wire->settings();
             serial_wire->setPortName(p.name);
-            serial_wire->setBaudRate(19200);
+            serial_wire->setBaudRate(38400); //19200
             serial_wire->setDataBits(p.dataBits);
             serial_wire->setParity(p.parity);
             serial_wire->setStopBits(p.stopBits);
@@ -129,7 +131,7 @@ void MainWindow::openSerialPort_wire()
 
 void MainWindow::openSerialPort_rotation()
 {
-    if (serial_rotation->isOpen())
+    if (WireSerialOpen)
             serial_rotation->close();
         SettingsDialog::Settings q = settings_rotation->settings();
         serial_rotation->setPortName(q.name);
@@ -182,14 +184,14 @@ void MainWindow::handleError_rotation(QSerialPort::SerialPortError error)
 
 void MainWindow::closeSerialPort_wire()
 {
-    if (serial_wire->isOpen())
+    if (WireSerialOpen)
         serial_wire->close();
     serialstatus_wire->setText("Serial1: Disconnected");
 }
 
 void MainWindow::closeSerialPort_rotation()
 {
-    if(serial_rotation->isOpen())
+    if(RotationSerialOpen)
         serial_rotation->close();
     serialstatus_rotation->setText("Serial2: Disconnected");
 }
@@ -204,7 +206,7 @@ void MainWindow::on_actionComms_wire_Settings_triggered()
 
 void MainWindow::on_lower_speed_spin_valueChanged(int arg1)
 {
-    if (!serial_wire->isOpen())
+    if (!WireSerialOpen)
     {
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
@@ -221,7 +223,7 @@ void MainWindow::on_lower_speed_spin_valueChanged(int arg1)
 
 void MainWindow::on_lower_enable_toggled(bool checked)
 {
-    if (!serial_wire->isOpen())
+    if (!WireSerialOpen)
     {
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
@@ -254,7 +256,7 @@ void MainWindow::on_lower_enable_toggled(bool checked)
 
 void MainWindow::on_upper_enable_toggled(bool checked)
 {
-    if (!serial_wire->isOpen())
+    if (!WireSerialOpen)
     {
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
@@ -286,7 +288,7 @@ void MainWindow::on_upper_enable_toggled(bool checked)
 
 void MainWindow::on_lower_pos_spin_valueChanged(int arg1)
 {
-    if (!serial_wire->isOpen())
+    if (!WireSerialOpen)
     {
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
@@ -312,14 +314,24 @@ void MainWindow::on_EMERGENCY_STOP_clicked()
     if (E_STOPPED)
     {
         ui->EMERGENCY_STOP->setText("Emergency Stop");
-        lower.Resume();
-        upper.Resume();
+        if (WireSerialOpen)
+        {
+            lower.Resume();
+            upper.Resume();
+        }
+        if (RotationSerialOpen)
+            rotation.Resume();
         E_STOPPED = false;
     }
     else
     {
-        upper.EmergencyStop();
-        lower.EmergencyStop();
+       if (WireSerialOpen)
+       {
+            upper.EmergencyStop();
+            lower.EmergencyStop();
+       }
+       if (RotationSerialOpen)
+            rotation.EmergencyStop();
         E_STOPPED = true;
         ui->EMERGENCY_STOP->setText("Resume...");
     }
@@ -332,8 +344,11 @@ void MainWindow::on_upper_speed_spin_editingFinished()
 
 void MainWindow::on_RUN_clicked()
 {
-    lower.Run(ui->lower_pos_spin->value());
-    upper.Run(ui->lower_pos_spin->value());
+    if (WireSerialOpen)
+    {
+        lower.Run(ui->lower_pos_spin->value());
+        upper.Run(ui->lower_pos_spin->value());
+    }
 }
 
 void MainWindow::on_lower_diameter_spin_valueChanged(double arg1)
@@ -392,7 +407,7 @@ void MainWindow::on_Rotation_pos_spin_valueChanged(int arg1)
 
 void MainWindow::on_pushButton_clicked(bool checked)
 {
-    if (!serial_rotation->isOpen())
+    if (!RotationSerialOpen)
     {
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;

@@ -122,6 +122,8 @@ private:
     bool E_STOPPED;
     double saved_speed;
     double saved_pos;
+    int lp;
+    int up;
 
 };
 
