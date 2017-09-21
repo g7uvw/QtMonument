@@ -212,11 +212,11 @@ void MainWindow::on_lower_speed_spin_valueChanged(int arg1)
         return;
     }
 
-    lower.SetSpeed((double)arg1); //cast as double here so we don't hit the int handler used for rotation stage.
+    lower.WireSetSpeed((double)arg1); //cast as double here so we don't hit the int handler used for rotation stage.
     // nasty cludgy hack. Sorry future me.
     float uppertmp = arg1 * (lower.m_circumference / upper.m_circumference);
     ui->upper_speed_spin->setValue( arg1 * (lower.m_circumference / upper.m_circumference));
-    upper.SetSpeed(arg1 * (lower.m_circumference / upper.m_circumference));
+    upper.WireSetSpeed(arg1 * (lower.m_circumference / upper.m_circumference));
 }
 
 
@@ -293,9 +293,9 @@ void MainWindow::on_lower_pos_spin_valueChanged(int arg1)
         QMessageBox::critical(this, tr("You're not connected to the motors!"), "Check the communications settings");
         return;
     }
-    lower.SetSpeed(ui->lower_speed_spin->value());
+    lower.WireSetSpeed(ui->lower_speed_spin->value());
     lower.SetDiameter(ui->lower_diameter_spin->value());
-    lower.SetPosition(arg1);
+    lower.WireSetPosition(arg1);
 }
 
 void MainWindow::on_upper_diameter_spin_valueChanged(double arg1)
@@ -358,7 +358,7 @@ void MainWindow::on_lower_diameter_spin_valueChanged(double arg1)
 
 void MainWindow::on_jog_speed_spin_valueChanged(double arg1)
 {
-    upper.SetSpeed(upper.GetSpeed()+ arg1);
+    upper.WireSetSpeed(upper.GetSpeed()+ arg1);
 }
 
 void MainWindow::on_jog_speed_save_clicked()
@@ -368,7 +368,7 @@ void MainWindow::on_jog_speed_save_clicked()
 
 void MainWindow::on_jog_speed_restore_clicked()
 {
-    upper.SetSpeed(saved_speed);
+    upper.WireSetSpeed(saved_speed);
     ui->upper_speed_spin->setValue(saved_speed);
 }
 
@@ -395,7 +395,7 @@ void MainWindow::on_actionConnect_to_Rotation_Stage_triggered()
 
 void MainWindow::on_Rotation_speed_spin_valueChanged(int arg1)
 {
-    rotation.SetSpeed(arg1);
+    rotation.WireSetSpeed(arg1);
 }
 
 void MainWindow::on_Rotation_pos_spin_valueChanged(int arg1)
@@ -439,6 +439,6 @@ void MainWindow::on_actionComms_Settings_triggered()
 
 void MainWindow::on_Rotation_pos_spin_editingFinished()
 {
-    rotation.SetPosition(ui->Rotation_pos_spin->value());
+    rotation.RotationSetPosition(ui->Rotation_pos_spin->value());
     rotation.Rotate();
 }

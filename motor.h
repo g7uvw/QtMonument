@@ -16,12 +16,12 @@ class Motor
         bool SetHighResolution();
         bool EmergencyStop(void);
         bool Resume(void);
-        bool SetSpeed(double Speed);
-        bool SetSpeed(int DegreesPerSecond);
+        bool WireSetSpeed(double Speed);
+        bool RotationSetSpeed(int DegreesPerSecond);
         bool SetDirection(bool Clockwise);
         bool SetZero();
-        bool SetPosition(double);
-        bool SetPosition(int Degrees);
+        bool WireSetPosition(double);
+        bool RotationSetPosition(int Degrees);
         bool Init(QSerialPort *port, uint16_t ID);
 
 //        bool STOP_TALKING_TO_MOTOR(std::stringstream& cmd);

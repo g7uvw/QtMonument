@@ -126,7 +126,7 @@ bool Motor::SetAcceleration(int Acceleration)
 
 
 
-bool Motor::SetSpeed(double Speed)
+bool Motor::WireSetSpeed(double Speed)
 {
 //    60 rpm = 1 rev/sec
 //    48mm diameter roller = 150.79 mm circumference
@@ -169,7 +169,7 @@ bool Motor::SetSpeed(double Speed)
     }
 }
 
-bool Motor:: SetSpeed(int DegreesPerSecond)
+bool Motor:: RotationSetSpeed(int DegreesPerSecond)
 {
     //    60 rpm = 1 rev/sec
     //    48mm diameter roller = 150.79 mm circumference
@@ -442,7 +442,7 @@ double Motor::GetPosition()
     return (m_circumference * tpos) /50000;
 }
 
-bool Motor::SetPosition(double pos)
+bool Motor::WireSetPosition(double pos)
 {
     TX_LOCKOUT = true;
     QByteArray line;
@@ -479,7 +479,7 @@ bool Motor::SetPosition(double pos)
     }
 }
 
-bool Motor::SetPosition(int Degrees)
+bool Motor::RotationSetPosition(int Degrees)
 {
     // 50000 pulses per revolution in this mode
     // 360 degrees per revolution.
