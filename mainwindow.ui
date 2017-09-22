@@ -71,10 +71,10 @@
             <string> mm</string>
            </property>
            <property name="minimum">
-            <number>-40000</number>
+            <number>-100000</number>
            </property>
            <property name="maximum">
-            <number>40000</number>
+            <number>100000</number>
            </property>
            <property name="displayIntegerBase">
             <number>10</number>

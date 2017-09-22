@@ -383,63 +383,19 @@ bool Motor::Rotate()
 
 double Motor::GetPosition()
 {
-//    stringstream cmd;
-//    QByteArray line;
-//    cmd.str("");
-//    cmd.clear();
-
-//    if (!TX_LOCKOUT)
-//    {
-//        //qDebug() << "Get Position";
-
-
-//        cmd << "?96"<< "." << MotorID << CRLF;
-//        line =  SendCommand(cmd);
-//        //qDebug() << line;
-//        line.clear();
-//        cmd.str("");
-//        cmd.clear();
-//        cmd << CRLF;
-//        line =  SendCommand(cmd);
-//        if (!line.isEmpty())
-//        {
-//            if (line.at(0) == 'P')
-//            {
-//                //qDebug()<< "I'll have a P please Bob";
-//                QByteArray tmp = line.mid(5);  // chomp the first 5 characters to leave just the number
-//                //qDebug() <<"Chomped first 5 chars " << tmp;
-//                std::string position = tmp.toStdString();
-//                int tpos = atoi (position.c_str());
-//                //qDebug()<< "converted to longs"  <<tpos;
-//                double pos = (m_circumference * tpos) / 50000;
-//                qDebug()<<"converted to actual position" << pos;
-//                //STOP_TALKING_TO_MOTOR(cmd);
-//                return pos;
-//            }
-
-//            else
-//            {
-//                //STOP_TALKING_TO_MOTOR(cmd);
-//                return -1;
-//            }
-
-//        }
-
-//        else
-//        {
-//            //STOP_TALKING_TO_MOTOR(cmd);
-//            return -1;
-//        }
-//    }
-//    else
-//    {
-//        return -1;
-//    }
+    QString motorselect = ".";
+    motorselect.append(QString::number(MotorID));
 
     QByteArray pos = ReadData();
-    std::string position = pos.toStdString();
-    int tpos = atoi (position.c_str());
-    return (m_circumference * tpos) /50000;
+    if (pos.contains(motorselect.toStdString().c_str()))
+    {
+        qDebug()<<pos;
+        std::string position = pos.toStdString();
+        int tpos = atoi (position.c_str());
+        return (m_circumference * tpos) /50000;
+
+    }
+    return NULL;
 }
 
 bool Motor::WireSetPosition(double pos)

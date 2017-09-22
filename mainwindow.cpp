@@ -68,10 +68,13 @@ void MainWindow::GetPositions_wire()
          lp = lower.GetPosition();
          up = upper.GetPosition();
          //qDebug()<<lp;
-         if(lp !=0)
+         if(lp !=NULL)
          {
-            ui->lower_distance->setValue(lp+0.01);
-            ui->upper_distance->setValue(up+0.01);
+            ui->lower_distance->setValue(lp);
+         }
+         if (up !=NULL)
+         {
+            ui->upper_distance->setValue(up);
          }
     }
 
